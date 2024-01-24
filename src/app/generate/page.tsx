@@ -1,7 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UseFormReturn, useForm } from "react-hook-form";
+import { createContext, useContext, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,20 +23,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { type ImageOpts, imageOptsSchema, stylePresets } from "@/lib/schemas";
-import { Input } from "@/components/ui/input";
-import { createContext, useContext } from "react";
+import { generateImage, getImageUrl } from "@/actions/generateImage";
 
 const formContext = createContext<UseFormReturn<ImageOpts> | null>(null);
 
 export default function SelectForm() {
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const form = useForm<ImageOpts>({
     resolver: zodResolver(imageOptsSchema),
     defaultValues: {
-      model: "asfdgb",
-      prompt: "dgell",
-      negative_prompt: "dsvflkj",
+      model: "sd_xl_base_1.0.safetensors [be9edd61]",
+      prompt: "puppies in a cloud, 4k",
+      negative_prompt: "badly drawn",
       steps: [20],
       cfg_scale: [7],
       seed: 2,
@@ -47,10 +52,15 @@ export default function SelectForm() {
 
   async function onSubmit(data: ImageOpts) {
     console.log(data);
+    setIsLoading(true);
+    const { job: jobId } = await generateImage(data);
+    const url = await getImageUrl(jobId);
+    setGeneratedImageUrl(url);
+    setIsLoading(false);
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4">
+    <div className="flex flex-col lg:flex-row gap-4 lg:p-8">
       <div className="w-full">
         <Form {...form}>
           <form
@@ -77,14 +87,30 @@ export default function SelectForm() {
                 </div>
                 <Seed />
               </div>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">Generate</Button>
             </formContext.Provider>
           </form>
         </Form>
       </div>
-      <div className="w-full flex flex-col gap-4">
-        <div className="w-full h-full min-h-96 border-8">Source Image</div>
-        <div className="w-full h-full min-h-96 border-8">Your Image</div>
+      <div className="w-full flex flex-col gap-4 items-center">
+        <img
+          className="w-96 h-96 border-4 rounded-xl"
+          src="/puppies.png"
+          alt="Source image"
+          width={24}
+          height={24}
+        />
+        {isLoading ? (
+          <Skeleton className="w-96 h-96" />
+        ) : (
+          <img
+            className="w-96 h-96 border-4 flex flex-col rounded-xl justify-center items-center"
+            src={generatedImageUrl}
+            alt="Your generated image"
+            width={24}
+            height={24}
+          />
+        )}
       </div>
     </div>
   );
@@ -307,7 +333,7 @@ function StylePreset() {
       render={({ field }) => (
         <FormItem className="w-full">
           <FormLabel>Style Preset</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select style preset" />

@@ -34,7 +34,7 @@ export const imageOptsSchema = z.object({
   steps: z.array(z.number().min(1).max(25)),
   cfg_scale: z.array(z.number().min(1).max(20)),
   seed: z.literal(2),
-  style_preset: z.enum(stylePresets),
+  style_preset: z.enum(stylePresets).optional(),
   sampler: z.string(),
   width: z.literal(1024),
   height: z.literal(1024),
