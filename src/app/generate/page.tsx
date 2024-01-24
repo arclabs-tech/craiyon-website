@@ -25,6 +25,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 
 import { type ImageOpts, imageOptsSchema, stylePresets } from "@/lib/schemas";
 import { generateImage, getImageUrl } from "@/actions/generateImage";
@@ -33,7 +34,7 @@ const formContext = createContext<UseFormReturn<ImageOpts> | null>(null);
 
 export default function SelectForm() {
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<ImageOpts>({
     resolver: zodResolver(imageOptsSchema),
     defaultValues: {
@@ -71,7 +72,7 @@ export default function SelectForm() {
               <div className="flex flex-col gap-4">
                 <h1 className="text-3xl font-bold">Generate Image</h1>
                 <Model />
-                <div className="flex flex-row gap-4">
+                <div className="flex flex-col lg:flex-row gap-4">
                   <Prompt />
                   <NegativePrompt />
                 </div>
@@ -79,20 +80,24 @@ export default function SelectForm() {
                   <Steps />
                   <CFGScale />
                 </div>
-                <Sampler />
-                <StylePreset />
+                <div className="flex flex-row gap-4 w-full">
+                  <Sampler />
+                  <StylePreset />
+                </div>
                 <div className="flex flex-row gap-4 w-full">
                   <Width />
                   <Height />
                 </div>
                 <Seed />
+                <Button type="submit" className="w-48">
+                  Generate
+                </Button>
               </div>
-              <Button type="submit">Generate</Button>
             </formContext.Provider>
           </form>
         </Form>
       </div>
-      <div className="w-full flex flex-col gap-4 items-center">
+      <div className="w-full flex flex-col gap-4 items-center p-6">
         <img
           className="w-96 h-96 border-4 rounded-xl"
           src="/puppies.png"
@@ -101,12 +106,12 @@ export default function SelectForm() {
           height={24}
         />
         {isLoading ? (
-          <Skeleton className="w-96 h-96" />
+          <Skeleton className="w-96 h-96 rounded-xl" />
         ) : (
           <img
             className="w-96 h-96 border-4 flex flex-col rounded-xl justify-center items-center"
             src={generatedImageUrl}
-            alt="Your generated image"
+            alt="Your generated image here"
             width={24}
             height={24}
           />
@@ -150,7 +155,7 @@ function Prompt() {
         <FormItem className="w-full">
           <FormLabel>Prompt</FormLabel>
           <FormControl>
-            <Input placeholder="Your prompt here..." {...field} />
+            <Textarea placeholder="Your prompt here..." {...field} />
           </FormControl>
           <FormDescription>
             What do you want the model to generate
@@ -173,7 +178,7 @@ function NegativePrompt() {
         <FormItem className="w-full">
           <FormLabel>Negative Prompt</FormLabel>
           <FormControl>
-            <Input placeholder="Your negative prompt here..." {...field} />
+            <Textarea placeholder="Your negative prompt here..." {...field} />
           </FormControl>
           <FormDescription>
             What you don&apos;t want the model to generate
@@ -252,7 +257,7 @@ function Seed() {
           <FormControl>
             <Input disabled defaultValue={2} />
           </FormControl>
-          <FormDescription>Fixed at 2</FormDescription>
+          <FormDescription>Seed is fixed at 2</FormDescription>
           <FormMessage />
         </FormItem>
       )}
