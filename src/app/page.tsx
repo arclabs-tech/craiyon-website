@@ -23,10 +23,12 @@ import {
   teamLoginSchema as schema,
   type TeamLoginSchema as Schema,
 } from "@/lib/schemas";
+import { useTeamNameStore } from "@/lib/stores";
 
 export default function TeamLogin() {
   const router = useRouter();
   const [alert, setAlert] = React.useState<React.ReactNode | null>(null);
+  const setTeamName = useTeamNameStore((state) => state.setTeamName);
   const form = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -36,7 +38,8 @@ export default function TeamLogin() {
   });
   async function onSubmit(data: Schema) {
     try {
-      await teamLoginAction(data);
+      const hashedTeamName = await teamLoginAction(data);
+      setTeamName(hashedTeamName);
       router.push("/generate");
     } catch (err: any) {
       setAlert(
