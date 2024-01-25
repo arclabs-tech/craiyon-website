@@ -3,7 +3,7 @@
 import axios from "axios";
 
 import { type ImageOpts } from "@/lib/schemas";
-import { embeddings as srcEmbeddings } from "@/lib/embeddings";
+import { getSrcEmbeddings } from "@/lib/embeddings";
 import { cosineSimilarity } from "@/lib/similarity";
 
 type ResponseProps = {
@@ -75,7 +75,7 @@ async function getBase64Image(imageUrl: string) {
   return base64;
 }
 
-async function getEmbedding(imageData: string): Promise<number[]> {
+async function getEmbedding(imageData: string): Promise<Float32Array> {
   const { data, status } = await axios.post(
     "https://62etifevx7ft3i72nmavnfsrsu0thgvs.lambda-url.us-east-1.on.aws/",
     {
@@ -91,7 +91,7 @@ async function getEmbedding(imageData: string): Promise<number[]> {
   if (status !== 200)
     throw new Error(`Error ${status}: Failed to get image embedding`);
 
-  return data.embedding;
+  return new Float32Array(data.embedding);
 }
 
 export async function getImageData(opts: ImageOpts) {
@@ -99,7 +99,10 @@ export async function getImageData(opts: ImageOpts) {
   const url = await getImageUrl(job);
   const base64 = await getBase64Image(url);
   const embedding = await getEmbedding(base64);
+  const srcEmbeddings = await getSrcEmbeddings();
   const similarity = cosineSimilarity(embedding, srcEmbeddings);
 
   return { base64, similarity };
 }
+
+export { generateImage, getImageUrl, getBase64Image, getEmbedding };
