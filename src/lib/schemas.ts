@@ -27,8 +27,16 @@ export const stylePresets = [
   "craft-clay",
 ] as const;
 
+export const imageModels = [
+  "sd_xl_base_1.0.safetensors [be9edd61]",
+  "dreamshaperXL10_alpha2.safetensors [c8afe2ef]",
+  "dynavisionXL_0411.safetensors [c39cc051]",
+  "juggernautXL_v45.safetensors [e75f5471]",
+  "realismEngineSDXL_v10.safetensors [af771c3f]",
+] as const;
+
 export const imageOptsSchema = z.object({
-  model: z.string(),
+  model: z.enum(imageModels),
   prompt: z.string().min(0).max(2000),
   negative_prompt: z.string().min(0).max(2000),
   steps: z.array(z.number().min(1).max(25)),

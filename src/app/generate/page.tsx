@@ -69,6 +69,7 @@ export default function SelectForm() {
       setBase64Data("");
       setSimilarity(0);
       setState(State.Generate);
+      return;
     }
     setState(State.Initializing);
     const { job } = await generateImage(data);
@@ -97,7 +98,10 @@ export default function SelectForm() {
             <formContext.Provider value={form}>
               <div className="flex flex-col gap-4">
                 <h1 className="text-3xl font-bold">Generate Image</h1>
-                <Model />
+                <div className="flex flex-row gap-4 w-full">
+                  <Model />
+                  <Seed />
+                </div>
                 <div className="flex flex-col lg:flex-row gap-4">
                   <Prompt />
                   <NegativePrompt />
@@ -114,7 +118,6 @@ export default function SelectForm() {
                   <Width />
                   <Height />
                 </div>
-                <Seed />
                 <div className="flex flex-row items-center gap-4">
                   <Button
                     type="submit"
@@ -134,7 +137,7 @@ export default function SelectForm() {
       </div>
       <div className="w-full flex flex-col gap-4 items-center p-6">
         <img
-          className="w-96 h-96 border-4 rounded-xl"
+          className="w-80 h-80 md:w-96 md:h-96 border-4 rounded-xl"
           src="/puppies.png"
           alt="Source image"
           width={24}
@@ -145,7 +148,7 @@ export default function SelectForm() {
         ) : (
           <div className="flex flex-col rounded-xl justify-center items-center">
             <img
-              className="w-96 h-96 border-4 flex flex-col rounded-xl justify-center items-center"
+              className="w-80 h-80 md:w-96 md:h-96 border-4 flex flex-col rounded-xl justify-center items-center"
               src={`data:image/png;base64,${base64Data}`}
               alt="Your generated image here"
               width={24}

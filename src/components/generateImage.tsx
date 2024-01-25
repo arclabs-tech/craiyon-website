@@ -1,4 +1,4 @@
-import { ImageOpts, stylePresets } from "@/lib/schemas";
+import { ImageOpts, stylePresets, imageModels } from "@/lib/schemas";
 import {
   Select,
   SelectTrigger,
@@ -30,10 +30,21 @@ function Model() {
       name="model"
       render={({ field }) => (
         <FormItem className="w-full">
-          <FormLabel>Model Name</FormLabel>
-          <FormControl>
-            <Input placeholder="Model Name..." {...field} />
-          </FormControl>
+          <FormLabel>Diffusion Model</FormLabel>
+          <Select onValueChange={field.onChange}>
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select model" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {imageModels.map((model) => (
+                <SelectItem key={model} value={model}>
+                  {model}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <FormDescription>
             Choose one from the given list of models.
           </FormDescription>
