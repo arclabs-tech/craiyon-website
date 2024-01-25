@@ -3,34 +3,36 @@
 import axios from "axios";
 
 import { type ImageOpts } from "@/lib/schemas";
+import { embeddings as srcEmbeddings } from "@/lib/embeddings";
+import { cosineSimilarity } from "@/lib/similarity";
 
 type ResponseProps = {
   job: string;
   status: string;
 };
 
-export async function generateImage(data: ImageOpts) {
+async function generateImage(opts: ImageOpts) {
   const body = {
-    ...data,
-    steps: data.steps[0],
-    cfg_scale: data.cfg_scale[0],
+    ...opts,
+    steps: opts.steps[0],
+    cfg_scale: opts.cfg_scale[0],
   };
   if (body.style_preset == "none") delete body.style_preset;
 
-  const opts = {
-    headers: {
-      "Content-Type": "application/json",
-      "X-Prodia-Key": process.env.PRODIA_API_KEY,
-    },
-  };
-
-  const res = await axios.post<ResponseProps>(
+  const { data, status } = await axios.post<ResponseProps>(
     "https://api.prodia.com/v1/sdxl/generate",
     body,
-    opts
+    {
+      headers: {
+        "X-Prodia-Key": process.env.PRODIA_API_KEY,
+        "Content-Type": "application/json",
+      },
+    }
   );
-  // const jobId = res.data.job;
-  return res.data;
+  if (status !== 200)
+    throw new Error(`Error ${status}: Failed to generate image`);
+
+  return data;
 }
 
 type GetImageUrlResponseProps = {
@@ -39,23 +41,17 @@ type GetImageUrlResponseProps = {
   imageUrl: string;
 };
 
-export async function getJobInfo(jobId: string) {
-  const opts = {
-    headers: {
-      "X-Prodia-Key": process.env.PRODIA_API_KEY,
-    },
-  };
-
-  const res = await axios.get<GetImageUrlResponseProps>(
+async function getImageUrl(jobId: string): Promise<string> {
+  const { data: job, status } = await axios.get<GetImageUrlResponseProps>(
     `https://api.prodia.com/v1/job/${jobId}`,
-    opts
+    {
+      headers: {
+        "X-Prodia-Key": process.env.PRODIA_API_KEY,
+      },
+    }
   );
-  // const imageUrl = res.data.imageUrl;
-  return res.data;
-}
-
-export async function getImageUrl(jobId: string): Promise<string> {
-  const job = await getJobInfo(jobId);
+  if (status !== 200)
+    throw new Error(`Error ${status}: Failed to get image url`);
 
   if (job.status === "succeeded") {
     return job.imageUrl;
@@ -66,4 +62,44 @@ export async function getImageUrl(jobId: string): Promise<string> {
       }, 2000);
     });
   }
+}
+
+async function getBase64Image(imageUrl: string) {
+  const { data, status } = await axios.get(imageUrl, {
+    responseType: "arraybuffer",
+  });
+  if (status !== 200)
+    throw new Error(`Error ${status}: Failed to get image data`);
+
+  const base64 = Buffer.from(data, "binary").toString("base64");
+  return base64;
+}
+
+async function getEmbedding(imageData: string): Promise<number[]> {
+  const { data, status } = await axios.post(
+    "https://62etifevx7ft3i72nmavnfsrsu0thgvs.lambda-url.us-east-1.on.aws/",
+    {
+      img: imageData,
+      dims: 1024,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (status !== 200)
+    throw new Error(`Error ${status}: Failed to get image embedding`);
+
+  return data.embedding;
+}
+
+export async function getImageData(opts: ImageOpts) {
+  const { job } = await generateImage(opts);
+  const url = await getImageUrl(job);
+  const base64 = await getBase64Image(url);
+  const embedding = await getEmbedding(base64);
+  const similarity = cosineSimilarity(embedding, srcEmbeddings);
+
+  return { base64, similarity };
 }

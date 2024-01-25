@@ -28,12 +28,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 
 import { type ImageOpts, imageOptsSchema, stylePresets } from "@/lib/schemas";
-import { generateImage, getImageUrl } from "@/actions/generateImage";
+import { getImageData } from "@/actions/generateImage";
 
 const formContext = createContext<UseFormReturn<ImageOpts> | null>(null);
 
 export default function SelectForm() {
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string>("");
+  const [generatedImageBase64Data, setGeneratedImageBase64Data] =
+    useState<string>("");
+  const [similarity, setSimilarity] = useState<number>(0);
+  const [generated, setGenerated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<ImageOpts>({
     resolver: zodResolver(imageOptsSchema),
@@ -54,10 +57,11 @@ export default function SelectForm() {
   async function onSubmit(data: ImageOpts) {
     console.log(data);
     setIsLoading(true);
-    const { job: jobId } = await generateImage(data);
-    const url = await getImageUrl(jobId);
-    setGeneratedImageUrl(url);
+    const { base64, similarity } = await getImageData(data);
+    setGeneratedImageBase64Data(base64);
+    setSimilarity(similarity);
     setIsLoading(false);
+    setGenerated(true);
   }
 
   return (
@@ -108,13 +112,16 @@ export default function SelectForm() {
         {isLoading ? (
           <Skeleton className="w-96 h-96 rounded-xl" />
         ) : (
-          <img
-            className="w-96 h-96 border-4 flex flex-col rounded-xl justify-center items-center"
-            src={generatedImageUrl}
-            alt="Your generated image here"
-            width={24}
-            height={24}
-          />
+          <div className="flex flex-col rounded-xl justify-center items-center">
+            <img
+              className="w-96 h-96 border-4 flex flex-col rounded-xl justify-center items-center"
+              src={`data:image/png;base64,${generatedImageBase64Data}`}
+              alt="Your generated image here"
+              width={24}
+              height={24}
+            />
+            {generated && <p>Similarity is {similarity.toFixed(10)}</p>}
+          </div>
         )}
       </div>
     </div>
