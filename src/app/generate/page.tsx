@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { type ImageOpts, imageOptsSchema } from "@/lib/schemas";
+import { type ImageOpts, imageOptsSchema, ImageEntry } from "@/lib/schemas";
 import {
   generateImage,
   getBase64Image,
@@ -18,6 +18,7 @@ import {
 } from "@/actions/generateImage";
 import { cosineSimilarity } from "@/lib/similarity";
 import { getSrcEmbeddings } from "@/lib/embeddings";
+import { addImageEntry } from "@/actions/addImageEntry";
 
 import {
   Model,
@@ -32,6 +33,7 @@ import {
   Seed,
   formContext,
 } from "@/components/generateImage";
+import { useTeamNameStore } from "@/lib/stores";
 
 enum State {
   Generate,
@@ -40,6 +42,7 @@ enum State {
   Downloading,
   GeneratingEmbedding,
   Calculating,
+  Submitting,
   Next,
 }
 
@@ -47,6 +50,7 @@ export default function SelectForm() {
   const [state, setState] = useState<State>(State.Generate);
   const [base64Data, setBase64Data] = useState<string>("");
   const [similarity, setSimilarity] = useState<number>(0);
+  const { team_name } = useTeamNameStore();
   const form = useForm<ImageOpts>({
     resolver: zodResolver(imageOptsSchema),
     defaultValues: {
@@ -84,6 +88,18 @@ export default function SelectForm() {
     const srcEmbeddings = await getSrcEmbeddings();
     const similarity = cosineSimilarity(embedding, srcEmbeddings);
     setSimilarity(similarity);
+    setState(State.Submitting);
+    const imageEntry: ImageEntry = {
+      image_id: 0,
+      team_name: team_name!,
+      image_url: url,
+      created_at: new Date(),
+      score: similarity,
+      ...data,
+      steps: data.steps[0],
+      cfg_scale: data.cfg_scale[0],
+    };
+    await addImageEntry(imageEntry);
     setState(State.Next);
   }
 

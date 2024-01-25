@@ -31,7 +31,7 @@ function Model() {
       render={({ field }) => (
         <FormItem className="w-full">
           <FormLabel>Diffusion Model</FormLabel>
-          <Select onValueChange={field.onChange}>
+          <Select onValueChange={field.onChange} value={field.value}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select model" />
@@ -249,7 +249,7 @@ function StylePreset() {
       render={({ field }) => (
         <FormItem className="w-full">
           <FormLabel>Style Preset</FormLabel>
-          <Select onValueChange={field.onChange}>
+          <Select onValueChange={field.onChange} value={field.value}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select style preset" />

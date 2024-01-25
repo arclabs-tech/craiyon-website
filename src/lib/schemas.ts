@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { Generated } from "kysely";
 
 export const teamLoginSchema = z.object({
   team_name: z.string().min(3).max(64),
@@ -35,7 +36,7 @@ export const imageModels = [
   "realismEngineSDXL_v10.safetensors [af771c3f]",
 ] as const;
 
-export const imageOptsSchema = z.object({
+const imageOpts = {
   model: z.enum(imageModels),
   prompt: z.string().min(0).max(2000),
   negative_prompt: z.string().min(0).max(2000),
@@ -46,15 +47,35 @@ export const imageOptsSchema = z.object({
   sampler: z.string(),
   width: z.literal(1024),
   height: z.literal(1024),
-});
+};
+export const imageOptsSchema = z.object(imageOpts);
 
 export type ImageOpts = z.infer<typeof imageOptsSchema>;
 
 export const imageEntrySchema = z.object({
   team_name: z.string().min(3).max(64),
   image_url: z.string().min(3).max(2000),
-  opts: imageOptsSchema,
   created_at: z.date(),
+  score: z.number().min(0).max(1),
+  ...imageOpts,
 });
 
-export type ImageEntry = z.infer<typeof imageEntrySchema>;
+export interface ImageEntry {
+  image_id: number;
+  team_name: string;
+  image_url: string;
+  created_at: Date;
+  score: number;
+  model: (typeof imageModels)[number];
+  prompt: string;
+  negative_prompt: string;
+  steps: number;
+  cfg_scale: number;
+  seed: 2;
+  style_preset?: (typeof stylePresets)[number];
+  sampler: string;
+  width: 1024;
+  height: 1024;
+}
+
+// export type ImageEntry = z.infer<typeof imageEntrySchema>;
