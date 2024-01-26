@@ -94,15 +94,4 @@ async function getEmbedding(imageData: string): Promise<Float32Array> {
   return new Float32Array(data.embedding);
 }
 
-export async function getImageData(opts: ImageOpts) {
-  const { job } = await generateImage(opts);
-  const url = await getImageUrl(job);
-  const base64 = await getBase64Image(url);
-  const embedding = await getEmbedding(base64);
-  const srcEmbeddings = await getSrcEmbeddings();
-  const similarity = cosineSimilarity(embedding, srcEmbeddings);
-
-  return { base64, similarity };
-}
-
 export { generateImage, getImageUrl, getBase64Image, getEmbedding };

@@ -4,6 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { getCookie } from "cookies-next";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -51,7 +52,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
   const [state, setState] = useState<State>(State.Generate);
   const [base64Data, setBase64Data] = useState<string>("");
   const [similarity, setSimilarity] = useState<number>(0);
-  const { team_name } = useTeamNameStore();
+  const team_name = getCookie("team_name") as string;
   const form = useForm<ImageOpts>({
     resolver: zodResolver(imageOptsSchema),
     defaultValues: {

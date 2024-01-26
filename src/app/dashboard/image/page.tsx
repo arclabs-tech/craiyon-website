@@ -14,7 +14,7 @@ export default function Index() {
 
 function Img({ id }: { id: string }) {
   return (
-    <Link className="w-72 h-72" href={`/image/${id}`}>
+    <Link className="w-72 h-72" href={`/dashboard/image/${id}`}>
       <img
         className="rounded-xl border-4"
         src={`/images/${id}.png`}
