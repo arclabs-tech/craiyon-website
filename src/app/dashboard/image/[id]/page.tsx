@@ -40,6 +40,7 @@ import {
 
 enum State {
   Generate,
+  Checking,
   Initializing,
   Generating,
   Downloading,
@@ -54,6 +55,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
   const [state, setState] = useState<State>(State.Generate);
   const [base64Data, setBase64Data] = useState<string>("");
   const [similarity, setSimilarity] = useState<number>(0);
+  const [remaining, setRemaining] = useState<number>(25);
   const team_name = getCookie("team_name") as string;
   const form = useForm<ImageOpts>({
     resolver: zodResolver(imageOptsSchema),
@@ -79,12 +81,14 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       setState(State.Generate);
       return;
     }
+    setState(State.Checking);
     const numOfRemainingImages =
       25 - (await getNumOfEntriesByImageId(imageId, team_name));
     if (numOfRemainingImages <= 0) {
       alert("You have reached the limit of 25 submissions per image");
       return;
     }
+    setRemaining(numOfRemainingImages);
     setState(State.Initializing);
     const { job } = await generateImage(data);
     setState(State.Generating);
@@ -127,7 +131,9 @@ export default function SelectForm({ params }: { params: { id: string } }) {
           >
             <formContext.Provider value={form}>
               <div className="flex flex-col gap-4">
-                <h1 className="text-3xl font-bold">Image {imageId}</h1>
+                <div className="flex flex-row items-center gap-4">
+                  <h1 className="text-3xl font-bold">Image {imageId}</h1>
+                </div>
                 <div className="flex flex-row gap-4 w-full">
                   <Model />
                   <Seed />
@@ -157,7 +163,10 @@ export default function SelectForm({ params }: { params: { id: string } }) {
                     {State[state]}
                   </Button>
                   {state >= State.Next && (
-                    <p>Score = {similarity.toFixed(10)}</p>
+                    <div>
+                      <p>Score = {similarity.toFixed(10)}</p>
+                      <p>{remaining} submissions remaining</p>
+                    </div>
                   )}
                 </div>
               </div>
