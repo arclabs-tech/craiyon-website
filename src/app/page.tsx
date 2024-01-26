@@ -40,7 +40,7 @@ export default function TeamLogin() {
     try {
       const hashedTeamName = await teamLoginAction(data);
       setTeamName(hashedTeamName);
-      router.push("/generate");
+      router.push("/dashboard");
     } catch (err: any) {
       setAlert(
         <Alert variant="destructive">

@@ -10,3 +10,12 @@ export async function addImageEntry(imageEntry: ImageEntry) {
     .executeTakeFirst();
   return insertId;
 }
+
+export async function getAllEntries(): Promise<ImageEntry[]> {
+  const entries = await db
+    .selectFrom("image_entries")
+    .selectAll()
+    .orderBy("score", "desc")
+    .execute();
+  return entries;
+}

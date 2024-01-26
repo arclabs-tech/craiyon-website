@@ -18,7 +18,7 @@ import {
 } from "@/actions/generateImage";
 import { cosineSimilarity } from "@/lib/similarity";
 import { getSrcEmbeddings } from "@/lib/embeddings";
-import { addImageEntry } from "@/actions/addImageEntry";
+import { addImageEntry } from "@/actions/imageEntries";
 
 import {
   Model,
@@ -46,7 +46,7 @@ enum State {
   Next,
 }
 
-export default function SelectForm() {
+export default function SelectForm({ params }: { params: { id: string } }) {
   const [state, setState] = useState<State>(State.Generate);
   const [base64Data, setBase64Data] = useState<string>("");
   const [similarity, setSimilarity] = useState<number>(0);
@@ -90,7 +90,7 @@ export default function SelectForm() {
     setSimilarity(similarity);
     setState(State.Submitting);
     const imageEntry: ImageEntry = {
-      image_id: 0,
+      image_id: Number(params.id),
       team_name: team_name!,
       image_url: url,
       created_at: new Date(),
@@ -113,7 +113,7 @@ export default function SelectForm() {
           >
             <formContext.Provider value={form}>
               <div className="flex flex-col gap-4">
-                <h1 className="text-3xl font-bold">Generate Image</h1>
+                <h1 className="text-3xl font-bold">Image {params.id}</h1>
                 <div className="flex flex-row gap-4 w-full">
                   <Model />
                   <Seed />
@@ -154,7 +154,7 @@ export default function SelectForm() {
       <div className="w-full flex flex-col gap-4 items-center p-6">
         <img
           className="w-80 h-80 md:w-96 md:h-96 border-4 rounded-xl"
-          src="/puppies.png"
+          src={`/images/${params.id}.png`}
           alt="Source image"
           width={24}
           height={24}
