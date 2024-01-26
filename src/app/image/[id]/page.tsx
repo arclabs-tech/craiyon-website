@@ -47,6 +47,7 @@ enum State {
 }
 
 export default function SelectForm({ params }: { params: { id: string } }) {
+  const imageId = Number(params.id);
   const [state, setState] = useState<State>(State.Generate);
   const [base64Data, setBase64Data] = useState<string>("");
   const [similarity, setSimilarity] = useState<number>(0);
@@ -69,7 +70,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
 
   async function onSubmit(data: ImageOpts) {
     if (state == State.Next) {
-      form.reset();
+      // form.reset();
       setBase64Data("");
       setSimilarity(0);
       setState(State.Generate);
@@ -85,12 +86,12 @@ export default function SelectForm({ params }: { params: { id: string } }) {
     setState(State.GeneratingEmbedding);
     const embedding = await getEmbedding(base64);
     setState(State.Calculating);
-    const srcEmbeddings = await getSrcEmbeddings();
+    const srcEmbeddings = await getSrcEmbeddings(imageId);
     const similarity = cosineSimilarity(embedding, srcEmbeddings);
     setSimilarity(similarity);
     setState(State.Submitting);
     const imageEntry: ImageEntry = {
-      image_id: Number(params.id),
+      image_id: imageId,
       team_name: team_name!,
       image_url: url,
       created_at: new Date(),
@@ -103,6 +104,10 @@ export default function SelectForm({ params }: { params: { id: string } }) {
     setState(State.Next);
   }
 
+  if (!Array.from({ length: 10 }, (_, i) => i + 1).includes(imageId)) {
+    return "Image not found";
+  }
+
   return (
     <div className="flex flex-col lg:flex-row gap-4 lg:p-8">
       <div className="w-full">
@@ -113,7 +118,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
           >
             <formContext.Provider value={form}>
               <div className="flex flex-col gap-4">
-                <h1 className="text-3xl font-bold">Image {params.id}</h1>
+                <h1 className="text-3xl font-bold">Image {imageId}</h1>
                 <div className="flex flex-row gap-4 w-full">
                   <Model />
                   <Seed />

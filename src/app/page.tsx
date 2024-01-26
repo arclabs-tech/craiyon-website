@@ -54,17 +54,15 @@ export default function TeamLogin() {
     }
   }
   return (
-    <main className="flex flex-col w-96 py-8 gap-8">
-      <div>
-        <h1 className="text-3xl font-bold">Craiyon</h1>
-        <p>The AI art generation contest</p>
-        {alert}
-      </div>
+    <main className="flex flex-col py-8 gap-8 items-center">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => onSubmit(data))}
-          className="space-y-8"
+          className="flex flex-col gap-y-4"
         >
+          <h1 className="text-3xl font-bold">Craiyon</h1>
+          <p>The AI art generation contest</p>
+          {alert}
           <FormField
             control={form.control}
             name="team_name"
