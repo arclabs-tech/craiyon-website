@@ -43,3 +43,16 @@ export async function getEntriesByImageId(
     .execute();
   return entries;
 }
+
+export async function getNumOfEntriesByImageId(
+  imageId: number,
+  team_name: string
+): Promise<number> {
+  const length = await db
+    .selectFrom("image_entries")
+    .select(({ fn, val, ref }) => fn.countAll().as("count"))
+    .where("image_id", "=", imageId)
+    .where("team_name", "=", team_name)
+    .execute();
+  return length[0].count as number;
+}

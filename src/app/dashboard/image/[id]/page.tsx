@@ -19,7 +19,10 @@ import {
 } from "@/actions/generateImage";
 import { cosineSimilarity } from "@/lib/similarity";
 import { getSrcEmbeddings } from "@/lib/embeddings";
-import { addImageEntry } from "@/actions/imageEntries";
+import {
+  addImageEntry,
+  getNumOfEntriesByImageId,
+} from "@/actions/imageEntries";
 
 import {
   Model,
@@ -74,6 +77,12 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       setBase64Data("");
       setSimilarity(0);
       setState(State.Generate);
+      return;
+    }
+    const numOfRemainingImages =
+      25 - (await getNumOfEntriesByImageId(imageId, team_name));
+    if (numOfRemainingImages <= 0) {
+      alert("You have reached the limit of 25 submissions per image");
       return;
     }
     setState(State.Initializing);
