@@ -23,12 +23,11 @@ import {
   teamLoginSchema as schema,
   type TeamLoginSchema as Schema,
 } from "@/lib/schemas";
-import { useTeamNameStore } from "@/lib/stores";
+import { setCookie } from "cookies-next";
 
 export default function TeamLogin() {
   const router = useRouter();
   const [alert, setAlert] = React.useState<React.ReactNode | null>(null);
-  const setTeamName = useTeamNameStore((state) => state.setTeamName);
   const form = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -39,7 +38,7 @@ export default function TeamLogin() {
   async function onSubmit(data: Schema) {
     try {
       const hashedTeamName = await teamLoginAction(data);
-      setTeamName(hashedTeamName);
+      setCookie("team_name", hashedTeamName);
       router.push("/dashboard");
     } catch (err: any) {
       setAlert(
@@ -54,17 +53,15 @@ export default function TeamLogin() {
     }
   }
   return (
-    <main className="flex flex-col w-96 py-8 gap-8">
-      <div>
-        <h1 className="text-3xl font-bold">Craiyon</h1>
-        <p>The AI art generation contest</p>
-        {alert}
-      </div>
+    <main className="flex flex-col py-8 gap-8 items-center">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => onSubmit(data))}
-          className="space-y-8"
+          className="flex flex-col gap-y-4"
         >
+          <h1 className="text-3xl font-bold">Craiyon</h1>
+          <p>The AI art generation contest</p>
+          {alert}
           <FormField
             control={form.control}
             name="team_name"

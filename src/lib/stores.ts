@@ -1,19 +1,11 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { cookies } from "next/headers";
 
 type teamDetails = {
   team_name: string | null;
-  setTeamName: (team_name: string | null) => void;
+  setTeamName: (team_name: string) => void;
 };
-export const useTeamNameStore = create(
-  persist<teamDetails>(
-    (set) => ({
-      team_name: null,
-      setTeamName: (team_name: string | null) => set({ team_name }),
-    }),
-    {
-      name: "team_name",
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
-);
+export const useTeamNameStore = create<teamDetails>()((_) => ({
+  team_name: cookies().get("team_name")?.toString() || null,
+  setTeamName: (team_name: string) => cookies().set("team_name", team_name),
+}));

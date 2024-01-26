@@ -60,7 +60,7 @@ export const imageEntrySchema = z.object({
   ...imageOpts,
 });
 
-export interface ImageEntry {
+export type ImageEntry = {
   image_id: number;
   team_name: string;
   image_url: string;
@@ -76,6 +76,6 @@ export interface ImageEntry {
   sampler: string;
   width: 1024;
   height: 1024;
-}
+};
 
 // export type ImageEntry = z.infer<typeof imageEntrySchema>;
