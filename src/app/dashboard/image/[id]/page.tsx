@@ -34,7 +34,6 @@ import {
   Seed,
   formContext,
 } from "@/components/generateImage";
-import { useTeamNameStore } from "@/lib/stores";
 
 enum State {
   Generate,
