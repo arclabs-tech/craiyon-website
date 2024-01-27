@@ -16,3 +16,17 @@ CREATE TABLE image_entries (
   width INT NOT NULL,
   height INT NOT NULL
 );
+
+CREATE TABLE text_entries (
+  id SERIAL PRIMARY KEY,
+  text_id INT NOT NULL,
+  team_name VARCHAR(128) NOT NULL,
+  generation TEXT NOT NULL,
+  created_at DATETIME NOT NULL,
+  score DECIMAL(12, 10) NOT NULL,
+  model VARCHAR(64) NOT NULL,
+  user_prompt TEXT NOT NULL,
+  system_prompt TEXT NOT NULL,
+  temperature DECIMAL(4, 3) NOT NULL,
+  max_tokens INT NOT NULL
+);

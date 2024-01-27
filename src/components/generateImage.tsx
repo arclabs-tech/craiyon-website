@@ -208,7 +208,18 @@ function Width() {
         <FormItem className="w-full">
           <FormLabel>Width</FormLabel>
           <FormControl>
-            <Input placeholder="Enter width..." {...field} />
+            <Input
+              placeholder="Enter width..."
+              {...field}
+              onChange={(event) => {
+                const numValue = parseInt(event.target.value);
+                if (isNaN(numValue)) {
+                  field.onChange(event.target.value);
+                } else {
+                  field.onChange(numValue);
+                }
+              }}
+            />
           </FormControl>
           <FormDescription>Width of generated image</FormDescription>
           <FormMessage />
@@ -229,7 +240,18 @@ function Height() {
         <FormItem className="w-full">
           <FormLabel>Height</FormLabel>
           <FormControl>
-            <Input placeholder="Enter height..." {...field} />
+            <Input
+              placeholder="Enter height..."
+              {...field}
+              onChange={(event) => {
+                const numValue = parseInt(event.target.value);
+                if (isNaN(numValue)) {
+                  field.onChange(event.target.value);
+                } else {
+                  field.onChange(numValue);
+                }
+              }}
+            />
           </FormControl>
           <FormDescription>Height of generated image</FormDescription>
           <FormMessage />

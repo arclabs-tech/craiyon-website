@@ -21,9 +21,23 @@ function Header() {
       <div className="flex flex-row gap-4 items-center">
         <h1 className="text-4xl font-semibold">Craiyon</h1>
       </div>
-      <Link href="/dashboard">
-        <Button variant={"outline"}>Dashboard</Button>
-      </Link>
+      <div className="flex flex-col lg:flex-row gap-4">
+        <Link href="/dashboard">
+          <Button variant={"outline"} className="w-full">
+            Dashboard
+          </Button>
+        </Link>
+        <Link href="/dashboard/submissions">
+          <Button variant={"outline"} className="w-full">
+            Your Submissions
+          </Button>
+        </Link>
+        <Link href="/dashboard/leaderboard">
+          <Button variant={"outline"} className="w-full">
+            Leaderboard
+          </Button>
+        </Link>
+      </div>
     </header>
   );
 }
