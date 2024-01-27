@@ -28,3 +28,29 @@ export async function getLeaderboard() {
 
   return rows;
 }
+
+export async function getLeaderboard2() {
+  const data = await sql<LeaderboardEntry>`
+  SELECT team_name, SUM(score) AS total_score
+  FROM (
+      SELECT team_name, MAX(score) AS score
+      FROM image_entries
+      GROUP BY team_name, image_id
+
+      UNION ALL
+
+      SELECT team_name, MAX(score) AS score
+      FROM text_entries
+      GROUP BY team_name, text_id
+  ) AS max_scores
+  GROUP BY team_name
+  ORDER BY total_score DESC;
+  `.execute(db);
+
+  const rows = data.rows.map((row) => ({
+    team_name: getTeamName(row.team_name),
+    total_score: row.total_score,
+  }));
+
+  return rows;
+}
