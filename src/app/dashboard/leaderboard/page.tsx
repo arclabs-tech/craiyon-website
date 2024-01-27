@@ -17,7 +17,7 @@ export default async function LeaderBoard({
   );
 }
 
-export async function getServersideProps() {
+export async function getServerSideProps() {
   const entries = await getLeaderboard();
   return {
     props: {
