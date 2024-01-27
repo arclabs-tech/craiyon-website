@@ -211,7 +211,14 @@ function Width() {
             <Input
               placeholder="Enter width..."
               {...field}
-              onChange={(event) => field.onChange(+event.target.value)}
+              onChange={(event) => {
+                const numValue = parseInt(event.target.value);
+                if (isNaN(numValue)) {
+                  field.onChange(event.target.value);
+                } else {
+                  field.onChange(numValue);
+                }
+              }}
             />
           </FormControl>
           <FormDescription>Width of generated image</FormDescription>
@@ -236,7 +243,14 @@ function Height() {
             <Input
               placeholder="Enter height..."
               {...field}
-              onChange={(event) => field.onChange(+event.target.value)}
+              onChange={(event) => {
+                const numValue = parseInt(event.target.value);
+                if (isNaN(numValue)) {
+                  field.onChange(event.target.value);
+                } else {
+                  field.onChange(numValue);
+                }
+              }}
             />
           </FormControl>
           <FormDescription>Height of generated image</FormDescription>

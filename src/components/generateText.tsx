@@ -130,7 +130,14 @@ function MaxTokens() {
           <FormControl>
             <Input
               {...field}
-              onChange={(event) => field.onChange(+event.target.value)}
+              onChange={(event) => {
+                const numValue = parseInt(event.target.value);
+                if (isNaN(numValue)) {
+                  field.onChange(event.target.value);
+                } else {
+                  field.onChange(numValue);
+                }
+              }}
             />
           </FormControl>
           <FormMessage />
