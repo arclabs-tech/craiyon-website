@@ -3,7 +3,6 @@ import { UseFormReturn } from "react-hook-form";
 
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -129,7 +128,10 @@ function MaxTokens() {
         <FormItem className="w-full">
           <FormLabel>Max Tokens</FormLabel>
           <FormControl>
-            <Input type="number" {...field} />
+            <Input
+              {...field}
+              onChange={(event) => field.onChange(+event.target.value)}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

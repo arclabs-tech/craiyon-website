@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
-import { getEntriesByTeamName } from "@/actions/imageEntries";
+import { getEntriesByTeamName as getImageEntriesByTeamName } from "@/actions/imageEntries";
+import { getEntriesByTeamName as getTextEntriesByTeamName } from "@/actions/textEntries";
 import { DataTable } from "./data-table";
-import { columns as imageColumns } from "./columns";
+import { columns as imageColumns, textColumns } from "./columns";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -13,7 +14,8 @@ export default async function Submissions() {
   }
   const team_name = team_name_cookie.value;
 
-  const imageEntries = await getEntriesByTeamName(team_name);
+  const imageEntries = await getImageEntriesByTeamName(team_name);
+  const textEntries = await getTextEntriesByTeamName(team_name);
   return (
     <div className="flex flex-col p-8 gap-4 items-center">
       <h1 className="text-4xl font-semibold">Your Submissions</h1>
@@ -31,7 +33,7 @@ export default async function Submissions() {
             <DataTable columns={imageColumns} data={imageEntries} />
           </TabsContent>
           <TabsContent value="text">
-            <DataTable columns={imageColumns} data={[]} />
+            <DataTable columns={textColumns} data={textEntries} />
           </TabsContent>
         </Tabs>
       </div>

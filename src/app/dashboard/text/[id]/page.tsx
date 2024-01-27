@@ -22,6 +22,7 @@ import { getTextSrcEmbeddings } from "@/lib/embeddings";
 import { cosineSimilarity } from "@/lib/similarity";
 import { getCookie } from "cookies-next";
 import { addTextEntry, getNumOfEntriesByTextId } from "@/actions/textEntries";
+import { getText } from "@/lib/text";
 
 enum State {
   Generate,
@@ -35,6 +36,7 @@ enum State {
 
 export default function TextGen({ params }: { params: { id: string } }) {
   const textId = Number(params.id);
+  const requiredText = getText(textId);
   const [state, setState] = useState<State>(State.Generate);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
   const [similarity, setSimilarity] = useState<number>(0);
@@ -128,7 +130,7 @@ export default function TextGen({ params }: { params: { id: string } }) {
           </formContext.Provider>
         </form>
       </Form>
-      <p className="p-4 border-2 rounded-xl">Required text</p>
+      <p className="p-4 border-2 rounded-xl">{requiredText}</p>
       {state >= State.Generating && state < State.Next ? (
         <Skeleton className="w-full h-full p-4" />
       ) : (
