@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-type LeaderboardEntry = {
+export type LeaderboardEntry = {
   team_name: string;
   total_score: number;
 };
