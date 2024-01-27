@@ -1,4 +1,9 @@
-import { hash } from "@/lib/utils";
+import { pbkdf2Sync } from "crypto";
+
+const salt = "fvjreshvdujknedik";
+export function hash(team_name: string) {
+  return pbkdf2Sync(team_name, salt, 1000, 64, "sha512").toString("hex");
+}
 const teams = [
   ["team1", "password1"],
   ["team2", "password2"],

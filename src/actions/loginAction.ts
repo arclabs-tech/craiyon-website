@@ -1,6 +1,6 @@
 "use server";
 import { type TeamLoginSchema } from "@/lib/schemas";
-import { hash } from "@/lib/utils";
+import { hash } from "@/lib/login";
 import { hashedTeams } from "@/lib/login";
 
 export async function teamLoginAction(data: TeamLoginSchema) {
