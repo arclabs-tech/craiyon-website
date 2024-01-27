@@ -32,6 +32,11 @@ function Header() {
             Your Submissions
           </Button>
         </Link>
+        <Link href="/dashboard/leaderboard">
+          <Button variant={"outline"} className="w-full">
+            Leaderboard
+          </Button>
+        </Link>
       </div>
     </header>
   );

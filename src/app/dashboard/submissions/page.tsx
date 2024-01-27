@@ -31,7 +31,7 @@ export default async function Submissions() {
             <DataTable columns={imageColumns} data={imageEntries} />
           </TabsContent>
           <TabsContent value="text">
-            <DataTable columns={imageColumns} data={imageEntries} />
+            <DataTable columns={imageColumns} data={[]} />
           </TabsContent>
         </Tabs>
       </div>
