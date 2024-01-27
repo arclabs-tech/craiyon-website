@@ -208,7 +208,11 @@ function Width() {
         <FormItem className="w-full">
           <FormLabel>Width</FormLabel>
           <FormControl>
-            <Input placeholder="Enter width..." {...field} />
+            <Input
+              placeholder="Enter width..."
+              {...field}
+              onChange={(event) => field.onChange(+event.target.value)}
+            />
           </FormControl>
           <FormDescription>Width of generated image</FormDescription>
           <FormMessage />
@@ -229,7 +233,11 @@ function Height() {
         <FormItem className="w-full">
           <FormLabel>Height</FormLabel>
           <FormControl>
-            <Input placeholder="Enter height..." {...field} />
+            <Input
+              placeholder="Enter height..."
+              {...field}
+              onChange={(event) => field.onChange(+event.target.value)}
+            />
           </FormControl>
           <FormDescription>Height of generated image</FormDescription>
           <FormMessage />
