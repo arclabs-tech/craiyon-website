@@ -13,26 +13,33 @@ import {
   formContext,
 } from "@/components/generateText";
 import { Form } from "@/components/ui/form";
-import { textOptsSchema, type TextOpts } from "@/lib/schemas";
+import { textOptsSchema, type TextOpts, TextEntry } from "@/lib/schemas";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { generateText, getEmbedding } from "@/actions/generateText";
 import { useState } from "react";
 import { getTextSrcEmbeddings } from "@/lib/embeddings";
 import { cosineSimilarity } from "@/lib/similarity";
+import { getCookie } from "cookies-next";
+import { addTextEntry, getNumOfEntriesByTextId } from "@/actions/textEntries";
 
 enum State {
   Generate,
+  Checking,
   Generating,
   GeneratingEmbedding,
   Calculating,
+  Submitting,
   Next,
 }
 
 export default function TextGen() {
+  const textId = 1;
   const [state, setState] = useState<State>(State.Generate);
   const [generatedText, setGeneratedText] = useState<string | null>(null);
   const [similarity, setSimilarity] = useState<number>(0);
+  const [remaining, setRemaining] = useState<number>(25);
+  const team_name = getCookie("team_name") as string;
   const form = useForm<TextOpts>({
     resolver: zodResolver(textOptsSchema),
     defaultValues: {
@@ -49,6 +56,14 @@ export default function TextGen() {
       setState(State.Generate);
       return;
     }
+    setState(State.Checking);
+    const numOfRemainingTexts =
+      25 - (await getNumOfEntriesByTextId(textId, team_name));
+    if (numOfRemainingTexts <= 0) {
+      alert("You have reached the limit of 25 submissions");
+      return;
+    }
+    setRemaining(numOfRemainingTexts);
     setState(State.Generating);
     const response = await generateText(data);
     if (response == null) {
@@ -58,11 +73,26 @@ export default function TextGen() {
     setGeneratedText(response);
     setState(State.GeneratingEmbedding);
     const embedding = await getEmbedding(response);
-    setState(State.Calculating);
     const srcEmbeddings = await getTextSrcEmbeddings();
+    setState(State.Calculating);
     const similarity = cosineSimilarity(embedding, srcEmbeddings);
     setSimilarity(similarity);
+    setState(State.Submitting);
+    const textEntry: TextEntry = {
+      text_id: textId,
+      created_at: new Date(),
+      generation: response,
+      score: similarity,
+      team_name: team_name,
+      ...data,
+      temperature: data.temperature[0],
+    };
+    await addTextEntry(textEntry);
     setState(State.Next);
+  }
+
+  if (!Array.from({ length: 10 }, (_, i) => i + 1).includes(textId)) {
+    return "Text not found";
   }
 
   return (
@@ -90,7 +120,7 @@ export default function TextGen() {
                 {state >= State.Next && (
                   <div>
                     <p>Score = {similarity.toFixed(10)}</p>
-                    {/* <p>{remaining} submissions remaining</p> */}
+                    <p>{remaining} submissions remaining</p>
                   </div>
                 )}
               </div>
