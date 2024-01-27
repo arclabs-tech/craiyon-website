@@ -1,5 +1,4 @@
 import * as z from "zod";
-import { Generated } from "kysely";
 
 export const teamLoginSchema = z.object({
   team_name: z.string().min(3).max(64),
@@ -78,4 +77,35 @@ export type ImageEntry = {
   height: 1024;
 };
 
-// export type ImageEntry = z.infer<typeof imageEntrySchema>;
+const textModels = ["gpt-3.5-turbo-1106", "llama-2-13b"] as const;
+const textOpts = {
+  model: z.enum(textModels),
+  user_prompt: z.string().min(0).max(1200),
+  system_prompt: z.string().min(0).max(1200),
+  temperature: z.array(z.number().min(0).max(1)),
+  max_tokens: z.number().min(1).max(2048),
+};
+
+export const textOptsSchema = z.object(textOpts);
+export type TextOpts = z.infer<typeof textOptsSchema>;
+
+export const textEntrySchema = z.object({
+  team_name: z.string().min(3).max(64),
+  generation: z.string().min(1).max(8000),
+  created_at: z.date(),
+  score: z.number().min(0).max(1),
+  ...textOpts,
+});
+
+export type TextEntry = {
+  text_id: number;
+  team_name: string;
+  generation: string;
+  created_at: Date;
+  score: number;
+  model: (typeof textModels)[number];
+  user_prompt: string;
+  system_prompt: string;
+  temperature: number;
+  max_tokens: number;
+};
