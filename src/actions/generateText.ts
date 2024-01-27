@@ -37,7 +37,14 @@ async function generateTextGPT3(opts: TextOpts) {
 }
 
 async function generateTextLlama(opts: TextOpts) {
-  const prompt = opts.system_prompt + opts.user_prompt;
+  const prompt = `
+  [INST]
+  <<SYS>>
+  ${opts.system_prompt}
+  <</SYS>>
+  ${opts.user_prompt}
+  [/INST]
+  `;
 
   const { data, status } = await axios.post<{ generation: string }>(
     "https://abh4g3zbqx33mutjmi3o52jzzq0ndtft.lambda-url.us-east-1.on.aws/",
