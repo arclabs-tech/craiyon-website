@@ -1,3 +1,5 @@
+"use server";
+
 import { getLeaderboard } from "@/actions/leaderboard";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
