@@ -166,7 +166,7 @@ function Seed() {
         <FormItem className="w-full">
           <FormLabel>Seed</FormLabel>
           <FormControl>
-            <Input disabled defaultValue={2} />
+            <Input defaultValue={2} />
           </FormControl>
           <FormDescription>Seed is fixed at 2</FormDescription>
           <FormMessage />
