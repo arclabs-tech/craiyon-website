@@ -37,6 +37,7 @@ import {
   Seed,
   formContext,
 } from "@/components/generateImage";
+import { toast } from "sonner";
 
 enum State {
   Generate,
@@ -74,47 +75,56 @@ export default function SelectForm({ params }: { params: { id: string } }) {
   });
 
   async function onSubmit(data: ImageOpts) {
-    if (state == State.Next) {
-      // form.reset();
-      setBase64Data("");
-      setSimilarity(0);
+    try {
+      if (state == State.Next) {
+        // form.reset();
+        setBase64Data("");
+        setSimilarity(0);
+        setState(State.Generate);
+        return;
+      }
+      setState(State.Checking);
+      const numOfRemainingImages =
+        25 - (await getNumOfEntriesByImageId(imageId, team_name));
+      if (numOfRemainingImages <= 0) {
+        alert("You have reached the limit of 25 submissions per image");
+        return;
+      }
+      setRemaining(numOfRemainingImages);
+      setState(State.Initializing);
+      const { job } = await generateImage(data);
+      setState(State.Generating);
+      const url = await getImageUrl(job);
+      setState(State.Downloading);
+      const base64 = await getBase64Image(url);
+      setBase64Data(base64);
+      setState(State.GeneratingEmbedding);
+      const embedding = await getEmbedding(base64);
+      setState(State.Calculating);
+      const srcEmbeddings = await getSrcEmbeddings(imageId);
+      const similarity = cosineSimilarity(embedding, srcEmbeddings);
+      setSimilarity(similarity);
+      setState(State.Submitting);
+      const imageEntry: ImageEntry = {
+        image_id: imageId,
+        team_name: team_name!,
+        image_url: url,
+        created_at: new Date(),
+        score: similarity,
+        ...data,
+        steps: data.steps[0],
+        cfg_scale: data.cfg_scale[0],
+      };
+      await addImageEntry(imageEntry);
+      setState(State.Next);
+    } catch (error: any) {
+      toast.error(error.message, {
+        style: {
+          scale: 1.25,
+        },
+      });
       setState(State.Generate);
-      return;
     }
-    setState(State.Checking);
-    const numOfRemainingImages =
-      25 - (await getNumOfEntriesByImageId(imageId, team_name));
-    if (numOfRemainingImages <= 0) {
-      alert("You have reached the limit of 25 submissions per image");
-      return;
-    }
-    setRemaining(numOfRemainingImages);
-    setState(State.Initializing);
-    const { job } = await generateImage(data);
-    setState(State.Generating);
-    const url = await getImageUrl(job);
-    setState(State.Downloading);
-    const base64 = await getBase64Image(url);
-    setBase64Data(base64);
-    setState(State.GeneratingEmbedding);
-    const embedding = await getEmbedding(base64);
-    setState(State.Calculating);
-    const srcEmbeddings = await getSrcEmbeddings(imageId);
-    const similarity = cosineSimilarity(embedding, srcEmbeddings);
-    setSimilarity(similarity);
-    setState(State.Submitting);
-    const imageEntry: ImageEntry = {
-      image_id: imageId,
-      team_name: team_name!,
-      image_url: url,
-      created_at: new Date(),
-      score: similarity,
-      ...data,
-      steps: data.steps[0],
-      cfg_scale: data.cfg_scale[0],
-    };
-    await addImageEntry(imageEntry);
-    setState(State.Next);
   }
 
   if (!Array.from({ length: 10 }, (_, i) => i + 1).includes(imageId)) {

@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} flex flex-col w-full h-full pt-4`}>
         <main>{children}</main>
-        <Toaster />
+        <Toaster position={"top-center"} />
       </body>
     </html>
   );
