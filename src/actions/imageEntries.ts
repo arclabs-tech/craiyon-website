@@ -21,7 +21,7 @@ export async function getAllEntries(): Promise<ImageEntry[]> {
 }
 
 export async function getEntriesByTeamName(
-  teamName: string
+  teamName: string,
 ): Promise<ImageEntry[]> {
   const entries = await db
     .selectFrom("image_entries")
@@ -33,7 +33,7 @@ export async function getEntriesByTeamName(
 }
 
 export async function getEntriesByImageId(
-  imageId: number
+  imageId: number,
 ): Promise<ImageEntry[]> {
   const entries = await db
     .selectFrom("image_entries")
@@ -46,7 +46,7 @@ export async function getEntriesByImageId(
 
 export async function getNumOfEntriesByImageId(
   imageId: number,
-  team_name: string
+  team_name: string,
 ): Promise<number> {
   const length = await db
     .selectFrom("image_entries")
