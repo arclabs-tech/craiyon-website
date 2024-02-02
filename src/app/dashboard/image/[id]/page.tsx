@@ -177,7 +177,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       <div className="w-full flex flex-col gap-4 items-center p-6">
         <img
           className="w-80 h-80 md:w-96 md:h-96 border-4 rounded-xl"
-          src={`/images/${params.id}.png`}
+          src={`/images/${params.id}.jpeg`}
           alt="Source image"
           width={24}
           height={24}

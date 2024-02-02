@@ -48,7 +48,7 @@ export default function TeamLogin() {
           <AlertDescription>
             {err.message || "Something went wrong."}
           </AlertDescription>
-        </Alert>
+        </Alert>,
       );
     }
   }
