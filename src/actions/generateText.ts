@@ -57,7 +57,7 @@ async function generateTextLlama(opts: TextOpts) {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
   if (status !== 200)
     throw new Error(`Error ${status}: Failed to get image embedding`);

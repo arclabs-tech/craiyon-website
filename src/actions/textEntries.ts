@@ -21,7 +21,7 @@ export async function getAllEntries(): Promise<TextEntry[]> {
 }
 
 export async function getEntriesByTeamName(
-  teamName: string
+  teamName: string,
 ): Promise<TextEntry[]> {
   const entries = await db
     .selectFrom("text_entries")
@@ -44,7 +44,7 @@ export async function getEntriesByTextId(textId: number): Promise<TextEntry[]> {
 
 export async function getNumOfEntriesByTextId(
   textId: number,
-  team_name: string
+  team_name: string,
 ): Promise<number> {
   const length = await db
     .selectFrom("text_entries")
