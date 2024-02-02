@@ -41,7 +41,7 @@ const imageOpts = {
   negative_prompt: z.string().min(0).max(2000),
   steps: z.array(z.number().min(1).max(25)),
   cfg_scale: z.array(z.number().min(1).max(20)),
-  seed: z.number().min(2).max(1000000),
+  seed: z.number().min(-1),
   style_preset: z.enum(stylePresets).optional(),
   sampler: z.string(),
   width: z.literal(1024),

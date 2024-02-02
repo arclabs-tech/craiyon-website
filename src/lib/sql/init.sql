@@ -10,7 +10,7 @@ CREATE TABLE image_entries (
   negative_prompt VARCHAR(2000) NOT NULL,
   steps TEXT NOT NULL,
   cfg_scale TEXT NOT NULL,
-  seed INT NOT NULL,
+  seed BIGINT NOT NULL,
   style_preset VARCHAR(50),
   sampler VARCHAR(255) NOT NULL,
   width INT NOT NULL,
