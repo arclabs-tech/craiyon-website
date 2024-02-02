@@ -166,7 +166,18 @@ function Seed() {
         <FormItem className="w-full">
           <FormLabel>Seed</FormLabel>
           <FormControl>
-            <Input defaultValue={2} />
+            <Input
+              placeholder="Enter seed..."
+              {...field}
+              onChange={(event) => {
+                const numValue = parseInt(event.target.value);
+                if (isNaN(numValue)) {
+                  field.onChange(event.target.value);
+                } else {
+                  field.onChange(numValue);
+                }
+              }}
+            />
           </FormControl>
           <FormDescription>Seed is fixed at 2</FormDescription>
           <FormMessage />

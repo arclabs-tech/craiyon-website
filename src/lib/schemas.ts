@@ -41,7 +41,7 @@ const imageOpts = {
   negative_prompt: z.string().min(0).max(2000),
   steps: z.array(z.number().min(1).max(25)),
   cfg_scale: z.array(z.number().min(1).max(20)),
-  seed: z.literal(2),
+  seed: z.number().min(2).max(1000000),
   style_preset: z.enum(stylePresets).optional(),
   sampler: z.string(),
   width: z.literal(1024),
@@ -70,7 +70,7 @@ export type ImageEntry = {
   negative_prompt: string;
   steps: number;
   cfg_scale: number;
-  seed: 2;
+  seed: number;
   style_preset?: (typeof stylePresets)[number];
   sampler: string;
   width: 1024;

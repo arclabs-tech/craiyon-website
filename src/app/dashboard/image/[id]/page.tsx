@@ -7,7 +7,7 @@ import { useState } from "react";
 import { getCookie } from "cookies-next";
 
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import { Form, FormMessage } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { type ImageOpts, imageOptsSchema, ImageEntry } from "@/lib/schemas";
@@ -168,6 +168,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
                       <p>{remaining} submissions remaining</p>
                     </div>
                   )}
+                  <FormMessage />
                 </div>
               </div>
             </formContext.Provider>
