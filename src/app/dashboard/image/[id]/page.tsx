@@ -127,10 +127,6 @@ export default function SelectForm({ params }: { params: { id: string } }) {
     }
   }
 
-  if (!Array.from({ length: 10 }, (_, i) => i + 1).includes(imageId)) {
-    return "Image not found";
-  }
-
   return (
     <div className="flex flex-col lg:flex-row gap-4 lg:p-8">
       <div className="w-full">
@@ -188,7 +184,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       <div className="w-full flex flex-col gap-4 items-center p-6">
         <img
           className="w-80 h-80 md:w-96 md:h-96 border-4 rounded-xl"
-          src={`/images/${params.id}.jpeg`}
+          src={`/images/${params.id}.jpg`}
           alt="Source image"
           width={24}
           height={24}
