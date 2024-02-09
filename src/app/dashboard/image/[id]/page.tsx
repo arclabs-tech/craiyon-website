@@ -85,7 +85,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       }
       setState(State.Checking);
       const numOfRemainingImages =
-        25 - (await getNumOfEntriesByImageId(imageId, team_name));
+        10 - (await getNumOfEntriesByImageId(imageId, team_name));
       if (numOfRemainingImages <= 0) {
         alert("You have reached the limit of 25 submissions per image");
         return;
