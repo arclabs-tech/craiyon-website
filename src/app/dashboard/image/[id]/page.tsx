@@ -171,7 +171,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
                   {state >= State.Next && (
                     <div>
                       <p>Score = {similarity.toFixed(10)}</p>
-                      <p>{remaining} submissions remaining</p>
+                      <p>{remaining - 1} submissions remaining</p>
                     </div>
                   )}
                   <FormMessage />

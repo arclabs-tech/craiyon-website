@@ -27,7 +27,7 @@ async function generateImage(opts: ImageOpts) {
         "X-Prodia-Key": process.env.PRODIA_API_KEY,
         "Content-Type": "application/json",
       },
-    },
+    }
   );
   if (status !== 200)
     throw new Error(`Error ${status}: Failed to generate image`);
@@ -48,7 +48,7 @@ async function getImageUrl(jobId: string): Promise<string> {
       headers: {
         "X-Prodia-Key": process.env.PRODIA_API_KEY,
       },
-    },
+    }
   );
   if (status !== 200)
     throw new Error(`Error ${status}: Failed to get image url`);
@@ -80,13 +80,13 @@ async function getEmbedding(imageData: string): Promise<Float32Array> {
     "https://62etifevx7ft3i72nmavnfsrsu0thgvs.lambda-url.us-east-1.on.aws/",
     {
       img: imageData,
-      dims: 1024,
+      dims: 256,
     },
     {
       headers: {
         "Content-Type": "application/json",
       },
-    },
+    }
   );
   if (status !== 200)
     throw new Error(`Error ${status}: Failed to get image embedding`);
