@@ -3,8 +3,6 @@
 import axios from "axios";
 
 import { type ImageOpts } from "@/lib/schemas";
-import { getSrcEmbeddings } from "@/lib/embeddings";
-import { cosineSimilarity } from "@/lib/similarity";
 
 type ResponseProps = {
   job: string;
@@ -12,23 +10,36 @@ type ResponseProps = {
 };
 
 async function generateImage(opts: ImageOpts) {
+  let url: string;
+  let width: number;
+  let height: number;
+  if (opts.model === "sd_xl_base_1.0.safetensors [be9edd61]") {
+    url = "https://api.prodia.com/v1/sdxl/generate";
+    width = 1024;
+    height = 1024;
+  } else if (opts.model === "v1-5-pruned-emaonly.safetensors [d7049739]") {
+    url = "https://api.prodia.com/v1/sd/generate";
+    width = 768;
+    height = 768;
+  } else {
+    throw new Error(`Invalid model: ${opts.model}`);
+  }
   const body = {
     ...opts,
     steps: opts.steps[0],
     cfg_scale: opts.cfg_scale[0],
+    width: width,
+    height: height,
   };
-  if (body.style_preset == "none") delete body.style_preset;
+  const apiKey = body.api_key;
+  delete body.api_key;
 
-  const { data, status } = await axios.post<ResponseProps>(
-    "https://api.prodia.com/v1/sdxl/generate",
-    body,
-    {
-      headers: {
-        "X-Prodia-Key": process.env.PRODIA_API_KEY,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const { data, status } = await axios.post<ResponseProps>(url, body, {
+    headers: {
+      "X-Prodia-Key": apiKey,
+      "Content-Type": "application/json",
+    },
+  });
   if (status !== 200)
     throw new Error(`Error ${status}: Failed to generate image`);
 
@@ -41,12 +52,12 @@ type GetImageUrlResponseProps = {
   imageUrl: string;
 };
 
-async function getImageUrl(jobId: string): Promise<string> {
+async function getImageUrl(jobId: string, apiKey: string): Promise<string> {
   const { data: job, status } = await axios.get<GetImageUrlResponseProps>(
     `https://api.prodia.com/v1/job/${jobId}`,
     {
       headers: {
-        "X-Prodia-Key": process.env.PRODIA_API_KEY,
+        "X-Prodia-Key": apiKey,
       },
     }
   );
@@ -58,7 +69,7 @@ async function getImageUrl(jobId: string): Promise<string> {
   } else {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        getImageUrl(jobId).then(resolve).catch(reject);
+        getImageUrl(jobId, apiKey).then(resolve).catch(reject);
       }, 2000);
     });
   }

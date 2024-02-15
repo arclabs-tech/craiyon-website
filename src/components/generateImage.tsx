@@ -179,7 +179,7 @@ function Seed() {
               }}
             />
           </FormControl>
-          <FormDescription>Seed is fixed at 2</FormDescription>
+          <FormDescription>Use -1 for random seed</FormDescription>
           <FormMessage />
         </FormItem>
       )}
@@ -272,32 +272,28 @@ function Height() {
   );
 }
 
-function StylePreset() {
+function APIKey() {
   const form = useContext(formContext);
   if (!form) return;
   return (
     <FormField
       control={form.control}
-      name="style_preset"
+      name="api_key"
       render={({ field }) => (
         <FormItem className="w-full">
-          <FormLabel>Style Preset</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Select style preset" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {stylePresets.map((preset) => (
-                <SelectItem key={preset} value={preset}>
-                  {preset}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FormLabel>API Key</FormLabel>
+          <FormControl>
+            <Input placeholder="API Key..." {...field} />
+          </FormControl>
           <FormDescription>
-            Select a style preset to use for the image.
+            Get API key from{" "}
+            <a
+              className="text-blue underline"
+              href="https://prodia.com"
+              target="_blank"
+            >
+              prodia.com
+            </a>
           </FormDescription>
           <FormMessage />
         </FormItem>
@@ -316,6 +312,6 @@ export {
   Sampler,
   Width,
   Height,
-  StylePreset,
+  APIKey,
   formContext,
 };

@@ -1,22 +1,27 @@
 /* eslint-disable @next/next/no-img-element */
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function DashBoard() {
+export default function Index() {
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-center justify-center pt-10">
-      <Link href="/dashboard/image">
-        <Button className="w-56 p-8 text-2xl">Image Round</Button>
-      </Link>
-      <Link href="/dashboard/text">
-        <Button className="w-56 p-8 text-2xl">Text Round</Button>
-      </Link>
-      <Link
-        href="/dashboard/leaderboard"
-        className="flex flex-col items-center"
-      >
-        <Button className="w-56 p-8 text-2xl">Leaderboard</Button>
-      </Link>
+    <div className="flex flex-col gap-4 px-6 items-center">
+      <h1 className="text-6xl font-semibold text-center">Choose an image</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 5 }, (_, i) => i + 1).map((id) => (
+          <Img key={id} id={id.toString()} />
+        ))}
+      </div>
     </div>
+  );
+}
+
+function Img({ id }: { id: string }) {
+  return (
+    <Link className="w-72 h-72" href={`/dashboard/image/${id}`}>
+      <img
+        className="rounded-xl border-4"
+        src={`/images/${id}.jpg`}
+        alt={`Image ${id}`}
+      />
+    </Link>
   );
 }

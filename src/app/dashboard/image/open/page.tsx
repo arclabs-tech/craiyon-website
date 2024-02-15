@@ -46,8 +46,7 @@ enum State {
   Next,
 }
 
-export default function SelectForm({ params }: { params: { id: string } }) {
-  const imageId = Number(params.id);
+export default function SelectForm() {
   const [state, setState] = useState<State>(State.Generate);
   const [base64Data, setBase64Data] = useState<string>("");
   const [score, setScore] = useState<number>(0);
@@ -85,22 +84,11 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       setState(State.Downloading);
       const base64 = await getBase64Image(url);
       setBase64Data(base64);
-      setState(State.GeneratingEmbedding);
-      const embedding = await getEmbedding(base64);
-      setState(State.Calculating);
-      const srcEmbeddings = await getSrcEmbeddings(imageId);
-      const similarity = cosineSimilarity(embedding, srcEmbeddings);
-      if (data.model === "v1-5-pruned-emaonly.safetensors [d7049739]") {
-        setScore(similarity * 1.05);
-      } else if (data.model === "sd_xl_base_1.0.safetensors [be9edd61]") {
-        setScore(similarity * 1);
-      } else {
-        setScore(similarity);
-      }
+      setScore(0);
       setState(State.Submitting);
       const { api_key, ...rest } = data;
       const imageEntry: ImageEntry = {
-        image_id: imageId,
+        image_id: 999,
         team_name: team_name!,
         image_url: url,
         created_at: new Date(),
@@ -128,7 +116,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
             <formContext.Provider value={form}>
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row items-center gap-4">
-                  <h1 className="text-3xl font-bold">Image {imageId}</h1>
+                  <h1 className="text-3xl font-bold">Open Section</h1>
                 </div>
                 <div className="flex flex-row gap-4 w-full">
                   <Model />
@@ -167,13 +155,6 @@ export default function SelectForm({ params }: { params: { id: string } }) {
         </Form>
       </div>
       <div className="w-full flex flex-col gap-4 items-center p-6">
-        <img
-          className="w-80 h-80 md:w-96 md:h-96 border-4 rounded-xl"
-          src={`/images/${params.id}.jpg`}
-          alt="Source image"
-          width={24}
-          height={24}
-        />
         {state >= State.Initializing && state <= State.Downloading ? (
           <Skeleton className="w-96 h-96 rounded-xl" />
         ) : (

@@ -21,7 +21,7 @@ export async function getAllEntries(): Promise<ImageEntry[]> {
 }
 
 export async function getEntriesByTeamName(
-  teamName: string,
+  teamName: string
 ): Promise<ImageEntry[]> {
   const entries = await db
     .selectFrom("image_entries")
@@ -33,7 +33,7 @@ export async function getEntriesByTeamName(
 }
 
 export async function getEntriesByImageId(
-  imageId: number,
+  imageId: number
 ): Promise<ImageEntry[]> {
   const entries = await db
     .selectFrom("image_entries")
@@ -42,17 +42,4 @@ export async function getEntriesByImageId(
     .orderBy("score", "desc")
     .execute();
   return entries;
-}
-
-export async function getNumOfEntriesByImageId(
-  imageId: number,
-  team_name: string,
-): Promise<number> {
-  const length = await db
-    .selectFrom("image_entries")
-    .select(({ fn, val, ref }) => fn.countAll().as("count"))
-    .where("image_id", "=", imageId)
-    .where("team_name", "=", team_name)
-    .execute();
-  return length[0].count as number;
 }

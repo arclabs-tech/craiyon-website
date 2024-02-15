@@ -16,12 +16,6 @@ export async function getLeaderboard() {
       SELECT team_name, MAX(score) AS score
       FROM image_entries
       GROUP BY team_name, image_id
-
-      UNION ALL
-
-      SELECT team_name, MAX(score) AS score
-      FROM text_entries
-      GROUP BY team_name, text_id
   ) AS max_scores
   GROUP BY team_name
   ORDER BY total_score DESC;
