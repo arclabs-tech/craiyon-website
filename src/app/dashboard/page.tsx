@@ -9,6 +9,15 @@ export default function Index() {
         {Array.from({ length: 5 }, (_, i) => i + 1).map((id) => (
           <Img key={id} id={id.toString()} />
         ))}
+        <Link
+          className="w-72 h-72 flex flex-col justify-center items-center border-4 rounded-xl"
+          href={`/dashboard/image/open`}
+        >
+          <p className="text-2xl font-semibold text-center">
+            Open <br />
+            Section
+          </p>
+        </Link>
       </div>
     </div>
   );

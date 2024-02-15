@@ -14,6 +14,11 @@ export const columns: ColumnDef<ImageEntry>[] = [
   {
     accessorKey: "image_id",
     header: () => <h1 className="w-18">Image No.</h1>,
+    cell: ({ row }) => (
+      <p className="w-18">
+        {row.original.image_id == 0 ? "Open" : row.original.image_id}
+      </p>
+    ),
   },
   {
     accessorKey: "score",

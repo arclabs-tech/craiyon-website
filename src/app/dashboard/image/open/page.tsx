@@ -14,11 +14,8 @@ import { type ImageOpts, imageOptsSchema, ImageEntry } from "@/lib/schemas";
 import {
   generateImage,
   getBase64Image,
-  getEmbedding,
   getImageUrl,
 } from "@/actions/generateImage";
-import { cosineSimilarity } from "@/lib/similarity";
-import { getSrcEmbeddings } from "@/lib/embeddings";
 import { addImageEntry } from "@/actions/imageEntries";
 
 import {
@@ -40,8 +37,6 @@ enum State {
   Initializing,
   Generating,
   Downloading,
-  GeneratingEmbedding,
-  Calculating,
   Submitting,
   Next,
 }
@@ -88,7 +83,7 @@ export default function SelectForm() {
       setState(State.Submitting);
       const { api_key, ...rest } = data;
       const imageEntry: ImageEntry = {
-        image_id: 999,
+        image_id: 0,
         team_name: team_name!,
         image_url: url,
         created_at: new Date(),
