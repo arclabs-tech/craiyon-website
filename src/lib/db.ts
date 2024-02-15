@@ -1,4 +1,4 @@
-import { ImageEntry, TextEntry } from "@/lib/schemas";
+import { ImageEntry } from "@/lib/schemas";
 import { createPool } from "mysql2"; // do not use 'mysql2/promises'!
 import { Kysely, MysqlDialect } from "kysely";
 
@@ -17,7 +17,6 @@ const dialect = new MysqlDialect({
 
 interface Database {
   image_entries: ImageEntry;
-  text_entries: TextEntry;
 }
 
 export const db = new Kysely<Database>({
