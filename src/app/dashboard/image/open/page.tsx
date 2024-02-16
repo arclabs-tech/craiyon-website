@@ -155,11 +155,11 @@ export default function SelectForm() {
         ) : (
           <div className="flex flex-col rounded-xl justify-center items-center">
             <img
-              className="w-80 h-80 md:w-96 md:h-96 border-4 flex flex-col rounded-xl justify-center items-center"
+              className="w-80 h-80 lg:w-[36rem] lg:h-[36rem] border-4 flex flex-col rounded-xl justify-center items-center"
               src={`data:image/png;base64,${base64Data}`}
               alt="Your generated image here"
-              width={24}
-              height={24}
+              width={240}
+              height={240}
             />
           </div>
         )}
