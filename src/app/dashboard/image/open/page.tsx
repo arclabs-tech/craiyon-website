@@ -151,7 +151,7 @@ export default function SelectForm() {
       </div>
       <div className="w-full flex flex-col gap-4 items-center p-6">
         {state >= State.Initializing && state <= State.Downloading ? (
-          <Skeleton className="w-96 h-96 rounded-xl" />
+          <Skeleton className="rounded-xl w-80 h-80 lg:w-[36rem] lg:h-[36rem]" />
         ) : (
           <div className="flex flex-col rounded-xl justify-center items-center">
             <img
