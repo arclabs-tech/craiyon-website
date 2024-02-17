@@ -73,7 +73,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       if (state == State.Next) {
         // form.reset();
         setBase64Data("");
-        setScore(0);
+        // setScore(0);
         setState(State.Generate);
         return;
       }
@@ -91,7 +91,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       const srcEmbeddings = await getSrcEmbeddings(imageId);
       const similarity = cosineSimilarity(embedding, srcEmbeddings);
       if (data.model === "v1-5-pruned-emaonly.safetensors [d7049739]") {
-        setScore(similarity * 1.05);
+        setScore(similarity * 1.01);
       } else if (data.model === "sd_xl_base_1.0.safetensors [be9edd61]") {
         setScore(similarity * 1);
       } else {
@@ -100,12 +100,12 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       setState(State.Submitting);
       const { api_key, ...rest } = data;
       const imageEntry: ImageEntry = {
+        ...rest,
         image_id: imageId,
         team_name: team_name!,
         image_url: url,
         created_at: new Date(),
         score: score,
-        ...rest,
         steps: data.steps[0],
         cfg_scale: data.cfg_scale[0],
       };

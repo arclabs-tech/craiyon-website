@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { ImageEntry } from "@/lib/schemas";
 
 export async function addImageEntry(imageEntry: ImageEntry) {
+  console.log("score: ", imageEntry.score);
   const { insertId } = await db
     .insertInto("image_entries")
     .values(imageEntry)
