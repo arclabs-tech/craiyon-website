@@ -28,7 +28,7 @@ function Img({ id }: { id: string }) {
     <Link className="w-72 h-72" href={`/dashboard/image/${id}`}>
       <img
         className="rounded-xl border-4"
-        src={`/images/${id}.jpg`}
+        src={`/images/${id}.png`}
         alt={`Image ${id}`}
       />
     </Link>
