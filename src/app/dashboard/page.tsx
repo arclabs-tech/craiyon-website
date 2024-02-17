@@ -6,7 +6,7 @@ export default function Index() {
     <div className="flex flex-col gap-4 px-6 items-center">
       <h1 className="text-6xl font-semibold text-center">Choose an image</h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 10 }, (_, i) => i + 1).map((id) => (
+        {Array.from({ length: 12 }, (_, i) => i + 1).map((id) => (
           <Img key={id} id={id.toString()} />
         ))}
         <Link
