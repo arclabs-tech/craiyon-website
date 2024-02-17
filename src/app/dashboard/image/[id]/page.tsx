@@ -99,19 +99,19 @@ export default function SelectForm({ params }: { params: { id: string } }) {
         newScore = similarity;
       }
       setScore(newScore);
-      setState(State.Submitting);
-      const { api_key, ...rest } = data;
-      const imageEntry: ImageEntry = {
-        ...rest,
-        image_id: imageId,
-        team_name: team_name!,
-        image_url: url,
-        created_at: new Date(),
-        score: newScore,
-        steps: data.steps[0],
-        cfg_scale: data.cfg_scale[0],
-      };
-      await addImageEntry(imageEntry);
+      // setState(State.Submitting);
+      // const { api_key, ...rest } = data;
+      // const imageEntry: ImageEntry = {
+      //   ...rest,
+      //   image_id: imageId,
+      //   team_name: team_name!,
+      //   image_url: url,
+      //   created_at: new Date(),
+      //   score: newScore,
+      //   steps: data.steps[0],
+      //   cfg_scale: data.cfg_scale[0],
+      // };
+      // await addImageEntry(imageEntry);
       setState(State.Next);
     } catch (error: any) {
       toast.error(error.message);
