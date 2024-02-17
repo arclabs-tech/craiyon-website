@@ -14,7 +14,7 @@ def image_to_base64(image_path):
 url = 'https://62etifevx7ft3i72nmavnfsrsu0thgvs.lambda-url.us-east-1.on.aws/'
 
 # # Loop through each file, convert it to base64, and send a POST request
-images = [f"{n}.png" for n in range(1, 10)]
+images = [f"{n}.png" for n in range(10, 11)]
 for image in images:
     print(image)
     image_base64 = image_to_base64(image)
