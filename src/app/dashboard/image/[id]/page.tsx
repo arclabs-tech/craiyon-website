@@ -90,13 +90,15 @@ export default function SelectForm({ params }: { params: { id: string } }) {
       setState(State.Calculating);
       const srcEmbeddings = await getSrcEmbeddings(imageId);
       const similarity = cosineSimilarity(embedding, srcEmbeddings);
+      let newScore: number;
       if (data.model === "v1-5-pruned-emaonly.safetensors [d7049739]") {
-        setScore(similarity * 1.01);
+        newScore = similarity * 1.01;
       } else if (data.model === "sd_xl_base_1.0.safetensors [be9edd61]") {
-        setScore(similarity * 1);
+        newScore = similarity * 1;
       } else {
-        setScore(similarity);
+        newScore = similarity;
       }
+      setScore(newScore);
       setState(State.Submitting);
       const { api_key, ...rest } = data;
       const imageEntry: ImageEntry = {
@@ -105,7 +107,7 @@ export default function SelectForm({ params }: { params: { id: string } }) {
         team_name: team_name!,
         image_url: url,
         created_at: new Date(),
-        score: score,
+        score: newScore,
         steps: data.steps[0],
         cfg_scale: data.cfg_scale[0],
       };
