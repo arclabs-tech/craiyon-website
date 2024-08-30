@@ -1,102 +1,145 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import React from "react";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Form, FormMessage } from "@/components/ui/form";
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { teamLoginAction } from "@/actions/loginAction";
+import { type ImageOpts, imageOptsSchema } from "@/lib/schemas";
 import {
-  teamLoginSchema as schema,
-  type TeamLoginSchema as Schema,
-} from "@/lib/schemas";
-import { setCookie } from "cookies-next";
+  generateImage,
+  getBase64Image,
+  getImageUrl,
+} from "@/actions/generateImage";
 
-export default function TeamLogin() {
-  const router = useRouter();
-  const [alert, setAlert] = React.useState<React.ReactNode | null>(null);
-  const form = useForm<Schema>({
-    resolver: zodResolver(schema),
+import {
+  Model,
+  Prompt,
+  NegativePrompt,
+  Steps,
+  CFGScale,
+  Sampler,
+  APIKey,
+  Seed,
+  formContext,
+} from "@/components/generateImage";
+import { toast } from "sonner";
+
+enum State {
+  Generate,
+  Checking,
+  Initializing,
+  Generating,
+  Downloading,
+  Submitting,
+  Next,
+}
+
+export default function SelectForm() {
+  const [state, setState] = useState<State>(State.Generate);
+  const [base64Data, setBase64Data] = useState<string>("");
+  const form = useForm<ImageOpts>({
+    resolver: zodResolver(imageOptsSchema),
     defaultValues: {
-      team_name: "",
-      password: "",
+      model: "sd_xl_base_1.0.safetensors [be9edd61]",
+      prompt: "",
+      negative_prompt: "",
+      steps: [20],
+      cfg_scale: [7],
+      seed: -1,
+      api_key: "",
+      sampler: "DPM++ 2M Karras",
+      width: 1024,
+      height: 1024,
     },
   });
-  async function onSubmit(data: Schema) {
+
+  async function onSubmit(data: ImageOpts) {
     try {
-      const hashedTeamName = await teamLoginAction(data);
-      setCookie("team_name", hashedTeamName);
-      router.push("/dashboard");
-    } catch (err: any) {
-      setAlert(
-        <Alert variant="destructive">
-          <ExclamationTriangleIcon className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            {err.message || "Something went wrong."}
-          </AlertDescription>
-        </Alert>
-      );
+      if (state == State.Next) {
+        // form.reset();
+        setBase64Data("");
+        setState(State.Generate);
+        return;
+      }
+      setState(State.Checking);
+      setState(State.Initializing);
+      const { job } = await generateImage(data);
+      setState(State.Generating);
+      const url = await getImageUrl(job, data.api_key!);
+      setState(State.Downloading);
+      const base64 = await getBase64Image(url);
+      setBase64Data(base64);
+      setState(State.Next);
+    } catch (error: any) {
+      toast.error(error.message);
+      setState(State.Generate);
     }
   }
+
   return (
-    <main className="flex flex-col py-8 gap-8 items-center">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit((data) => onSubmit(data))}
-          className="flex flex-col gap-y-4"
-        >
-          <h1 className="text-3xl font-bold">Craiyon</h1>
-          <p>The AI art generation contest</p>
-          {alert}
-          <FormField
-            control={form.control}
-            name="team_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Team Name</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="Team Name..." {...field} />
-                </FormControl>
-                <FormDescription>
-                  Use the team name you registered with.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Password..." {...field} />
-                </FormControl>
-                <FormDescription>
-                  Use the password provided to your email.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
-    </main>
+    <div className="flex flex-col lg:flex-row gap-4 lg:p-8">
+      <div className="w-full">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((data) => onSubmit(data))}
+            className="w-full px-4"
+          >
+            <formContext.Provider value={form}>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-row items-center gap-4">
+                  <h1 className="text-3xl font-bold">Craiyon By Aura</h1>
+                </div>
+                <div className="flex flex-row gap-4 w-full">
+                  <Model />
+                  <APIKey />
+                </div>
+                <div className="flex flex-col lg:flex-row gap-4">
+                  <Prompt />
+                  <NegativePrompt />
+                </div>
+                <div className="flex flex-row gap-4 w-full">
+                  <Steps />
+                  <CFGScale />
+                </div>
+                <div className="flex flex-row gap-4 w-full">
+                  <Sampler />
+                  <Seed />
+                </div>
+                <div className="flex flex-row items-center gap-4">
+                  <Button
+                    type="submit"
+                    className="w-48"
+                    disabled={!(state == State.Generate || state == State.Next)}
+                  >
+                    {State[state]}
+                  </Button>
+                  <FormMessage />
+                </div>
+              </div>
+            </formContext.Provider>
+          </form>
+        </Form>
+      </div>
+      <div className="w-full flex flex-col gap-4 items-center p-6">
+        {state >= State.Initializing && state <= State.Downloading ? (
+          <Skeleton className="rounded-xl w-80 h-80 lg:w-[36rem] lg:h-[36rem]" />
+        ) : (
+          <div className="flex flex-col rounded-xl justify-center items-center">
+            <img
+              className="w-80 h-80 lg:w-[36rem] lg:h-[36rem] border-4 flex flex-col rounded-xl justify-center items-center"
+              src={`data:image/png;base64,${base64Data}`}
+              alt="Your generated image here"
+              width={240}
+              height={240}
+            />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

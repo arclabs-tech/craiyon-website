@@ -1,11 +1,5 @@
 import * as z from "zod";
 
-export const teamLoginSchema = z.object({
-  team_name: z.string().min(3).max(64),
-  password: z.string().min(3).max(50),
-});
-export type TeamLoginSchema = z.infer<typeof teamLoginSchema>;
-
 export const stylePresets = [
   "none",
   "3d-model",
@@ -47,28 +41,3 @@ const imageOpts = {
 export const imageOptsSchema = z.object(imageOpts);
 
 export type ImageOpts = z.infer<typeof imageOptsSchema>;
-
-export const imageEntrySchema = z.object({
-  team_name: z.string().min(3).max(64),
-  image_url: z.string().min(3).max(2000),
-  created_at: z.date(),
-  score: z.number().min(0).max(1),
-  ...imageOpts,
-});
-
-export type ImageEntry = {
-  image_id: number;
-  team_name: string;
-  image_url: string;
-  created_at: Date;
-  score: number;
-  model: (typeof imageModels)[number];
-  prompt: string;
-  negative_prompt: string;
-  steps: number;
-  cfg_scale: number;
-  seed: number;
-  sampler: string;
-  width: number;
-  height: number;
-};

@@ -19,9 +19,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} flex flex-col w-full h-full pt-4`}>
+        <Header />
         <main>{children}</main>
         <Toaster position={"top-center"} />
       </body>
     </html>
+  );
+}
+
+function Header() {
+  return (
+    <header className="flex flex-row justify-between items-center p-4">
+      <div className="flex flex-row gap-4 items-center">
+        <h1 className="text-4xl font-semibold">Craiyon</h1>
+      </div>
+    </header>
   );
 }
