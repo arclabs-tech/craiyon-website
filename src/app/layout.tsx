@@ -30,8 +30,8 @@ export default function RootLayout({
 function Header() {
   return (
     <header className="flex flex-row justify-between items-center p-4">
-      <div className="flex flex-row gap-4 items-center">
-        <h1 className="text-4xl font-semibold">Craiyon</h1>
+      <div className="flex flex-row gap-4 items-end">
+        <h1 className="text-4xl font-semibold">Craiyon By Aura</h1>
       </div>
     </header>
   );

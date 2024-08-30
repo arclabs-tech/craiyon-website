@@ -31,7 +31,7 @@ function Model() {
       render={({ field }) => (
         <FormItem className="w-full">
           <FormLabel>Diffusion Model</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
+          <Select onValueChange={field.onChange} value={field.value} disabled>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select model" />
@@ -45,9 +45,6 @@ function Model() {
               ))}
             </SelectContent>
           </Select>
-          <FormDescription>
-            Choose one from the given list of models.
-          </FormDescription>
           <FormMessage />
         </FormItem>
       )}
@@ -198,9 +195,8 @@ function Sampler() {
         <FormItem className="w-full">
           <FormLabel>Sampler</FormLabel>
           <FormControl>
-            <Input placeholder="Sampler Name..." {...field} />
+            <Input disabled placeholder="Sampler Name..." {...field} />
           </FormControl>
-          <FormDescription>Idk what is sampler</FormDescription>
           <FormMessage />
         </FormItem>
       )}

@@ -91,12 +91,13 @@ export default function SelectForm() {
           >
             <formContext.Provider value={form}>
               <div className="flex flex-col gap-4">
-                <div className="flex flex-row items-center gap-4">
-                  <h1 className="text-3xl font-bold">Craiyon By Aura</h1>
-                </div>
                 <div className="flex flex-row gap-4 w-full">
                   <Model />
+                  <Sampler />
+                </div>
+                <div className="flex flex-row gap-4 w-full">
                   <APIKey />
+                  <Seed />
                 </div>
                 <div className="flex flex-col lg:flex-row gap-4">
                   <Prompt />
@@ -105,10 +106,6 @@ export default function SelectForm() {
                 <div className="flex flex-row gap-4 w-full">
                   <Steps />
                   <CFGScale />
-                </div>
-                <div className="flex flex-row gap-4 w-full">
-                  <Sampler />
-                  <Seed />
                 </div>
                 <div className="flex flex-row items-center gap-4">
                   <Button
@@ -129,7 +126,7 @@ export default function SelectForm() {
         {state >= State.Initializing && state <= State.Downloading ? (
           <Skeleton className="rounded-xl w-80 h-80 lg:w-[36rem] lg:h-[36rem]" />
         ) : (
-          <div className="flex flex-col rounded-xl justify-center items-center">
+          <div className="flex flex-col rounded-xl justify-center items-center gap-4">
             <img
               className="w-80 h-80 lg:w-[36rem] lg:h-[36rem] border-4 flex flex-col rounded-xl justify-center items-center"
               src={`data:image/png;base64,${base64Data}`}
@@ -137,6 +134,12 @@ export default function SelectForm() {
               width={240}
               height={240}
             />
+            <a
+              href={`data:image/png;base64,${base64Data}`}
+              download="craiyon.jpg"
+            >
+              <Button className="px-8">Download</Button>
+            </a>
           </div>
         )}
       </div>
