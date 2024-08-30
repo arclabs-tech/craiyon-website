@@ -134,12 +134,14 @@ export default function SelectForm() {
               width={240}
               height={240}
             />
-            <a
-              href={`data:image/png;base64,${base64Data}`}
-              download="craiyon.jpg"
-            >
-              <Button className="px-8">Download</Button>
-            </a>
+            {base64Data && (
+              <a
+                href={`data:image/png;base64,${base64Data}`}
+                download="craiyon.jpg"
+              >
+                <Button className="px-8">Download</Button>
+              </a>
+            )}
           </div>
         )}
       </div>
