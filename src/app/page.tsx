@@ -8,7 +8,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Form, FormMessage } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowDownToLineIcon, LinkIcon } from "lucide-react";
+import {
+  ArrowDownToLineIcon,
+  ArrowRightIcon,
+  LinkIcon,
+  Loader2Icon,
+  SparklesIcon,
+} from "lucide-react";
 
 import { type ImageOpts, imageOptsSchema } from "@/lib/schemas";
 import {
@@ -112,10 +118,19 @@ export default function SelectForm() {
                 <div className="flex flex-row items-center gap-4">
                   <Button
                     type="submit"
-                    className="w-48"
+                    className="w-48 flex flex-row gap-2 items-center"
                     disabled={!(state == State.Generate || state == State.Next)}
                   >
-                    {State[state]}
+                    <p>{State[state]}</p>
+                    {state == State.Generate && (
+                      <SparklesIcon className="w-4 h-4" />
+                    )}
+                    {state == State.Next && (
+                      <ArrowRightIcon className="w-4 h-4" />
+                    )}
+                    {!(state == State.Generate || state == State.Next) && (
+                      <Loader2Icon className="w-4 h-4 animate-spin" />
+                    )}
                   </Button>
                   <FormMessage />
                 </div>
