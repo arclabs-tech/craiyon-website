@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Form, FormMessage } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowDownToLineIcon, LinkIcon } from "lucide-react";
 
 import { type ImageOpts, imageOptsSchema } from "@/lib/schemas";
 import {
@@ -124,6 +125,26 @@ export default function SelectForm() {
         </Form>
       </div>
       <div className="w-full flex flex-col gap-4 items-center p-6">
+        <div className="flex flex-row gap-4">
+          <a
+            href="https://storage.googleapis.com/craiyonbooklet/brochure.pdf"
+            target="_blank"
+          >
+            <Button className="px-8 flex flex-row items-center gap-2">
+              <p>Brochure</p>
+              <LinkIcon className="w-4 h-4" />
+            </Button>
+          </a>
+          <a
+            href="https://storage.googleapis.com/craiyonbooklet/guideline.pdf"
+            target="_blank"
+          >
+            <Button className="px-8 flex flex-row items-center gap-2">
+              <p>Guidelines</p>
+              <LinkIcon className="w-4 h-4" />
+            </Button>
+          </a>
+        </div>
         {state >= State.Initializing && state <= State.Downloading ? (
           <Skeleton className="rounded-xl w-80 h-80 lg:w-[36rem] lg:h-[36rem]" />
         ) : (
@@ -140,7 +161,10 @@ export default function SelectForm() {
                 href={`data:image/png;base64,${base64Data}`}
                 download="craiyon.jpg"
               >
-                <Button className="px-8">Download</Button>
+                <Button className="px-8 flex flex-row items-center gap-2">
+                  <p>Download</p>
+                  <ArrowDownToLineIcon className="w-4 h-4" />
+                </Button>
               </a>
             )}
           </div>
