@@ -174,9 +174,9 @@ function Seed() {
                   field.onChange(numValue);
                 }
               }}
+              disabled
             />
           </FormControl>
-          <FormDescription>Use -1 for random seed</FormDescription>
           <FormMessage />
         </FormItem>
       )}
@@ -279,18 +279,8 @@ function APIKey() {
         <FormItem className="w-full">
           <FormLabel>API Key</FormLabel>
           <FormControl>
-            <Input placeholder="API Key..." {...field} />
+            <Input placeholder="API Key..." {...field} disabled />
           </FormControl>
-          <FormDescription>
-            Get API key from{" "}
-            <a
-              className="text-blue underline"
-              href="https://prodia.com"
-              target="_blank"
-            >
-              prodia.com
-            </a>
-          </FormDescription>
           <FormMessage />
         </FormItem>
       )}

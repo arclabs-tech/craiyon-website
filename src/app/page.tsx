@@ -28,6 +28,7 @@ import {
   formContext,
 } from "@/components/generateImage";
 import { toast } from "sonner";
+import { GetApiKey } from "@/lib/api-keys";
 
 enum State {
   Generate,
@@ -50,8 +51,8 @@ export default function SelectForm() {
       negative_prompt: "",
       steps: [20],
       cfg_scale: [7],
-      seed: -1,
-      api_key: "",
+      seed: 8926958723,
+      api_key: GetApiKey(),
       sampler: "DPM++ 2M Karras",
       width: 1024,
       height: 1024,
