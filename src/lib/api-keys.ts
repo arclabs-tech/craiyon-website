@@ -1,10 +1,24 @@
-const apiKeys: string[] = [
-  // Replace these with your actual Nebius API keys
-  "eyJhbGciOiJIUzI1NiIsImtpZCI6IlV6SXJWd1h0dnprLVRvdzlLZWstc0M1akptWXBvX1VaVkxUZlpnMDRlOFUiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJnb29nbGUtb2F1dGgyfDExNTk4NjIyMjc1MjYyNjI5NTYyOCIsInNjb3BlIjoib3BlbmlkIG9mZmxpbmVfYWNjZXNzIiwiaXNzIjoiYXBpX2tleV9pc3N1ZXIiLCJhdWQiOlsiaHR0cHM6Ly9uZWJpdXMtaW5mZXJlbmNlLmV1LmF1dGgwLmNvbS9hcGkvdjIvIl0sImV4cCI6MTkxMzQ3MTcwOCwidXVpZCI6ImVkOGUyMjQxLWRlZmItNDQyYi1hMTExLTA4ZDBhYzdjNjcyYSIsIm5hbWUiOiJ0ZXN0IiwiZXhwaXJlc19hdCI6IjIwMzAtMDgtMjBUMTU6NTU6MDgrMDAwMCJ9.o2W9cdXrSbMqbya2AZu8QoTUiG8iFV9gchE-hXtbXzU"
-  // "your-nebius-api-key-1",
-  // "your-nebius-api-key-2", 
-  // "your-nebius-api-key-3",
-];
+// Get API keys from environment variables
+function getApiKeysFromEnv(): string[] {
+  // First try to get multiple keys from NEBIUS_API_KEYS (comma-separated)
+  const multipleKeys = process.env.NEBIUS_API_KEYS;
+  if (multipleKeys) {
+    return multipleKeys.split(',').map(key => key.trim()).filter(key => key.length > 0);
+  }
+  
+  // Fallback to single key from NEBIUS_API_KEY
+  const singleKey = process.env.NEBIUS_API_KEY;
+  if (singleKey) {
+    return [singleKey];
+  }
+  
+  // If no environment variables are set, throw an error
+  throw new Error(
+    'No Nebius API key found. Please set NEBIUS_API_KEY or NEBIUS_API_KEYS in your environment variables.'
+  );
+}
+
+const apiKeys: string[] = getApiKeysFromEnv();
 
 export const GetApiKey = () =>
   apiKeys[Math.floor(Math.random() * apiKeys.length)];
