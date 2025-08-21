@@ -11,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowDownToLineIcon,
   ArrowRightIcon,
-  LinkIcon,
   Loader2Icon,
   SparklesIcon,
 } from "lucide-react";
