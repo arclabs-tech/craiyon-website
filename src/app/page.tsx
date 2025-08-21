@@ -20,7 +20,6 @@ import { type ImageOpts, imageOptsSchema } from "@/lib/schemas";
 import {
   generateImage,
   getBase64Image,
-  getImageUrl,
 } from "@/actions/generateImage";
 
 import {
@@ -29,13 +28,10 @@ import {
   NegativePrompt,
   Steps,
   CFGScale,
-  Sampler,
-  APIKey,
   Seed,
   formContext,
 } from "@/components/generateImage";
 import { toast } from "sonner";
-import { GetApiKey } from "@/lib/api-keys";
 
 enum State {
   Generate,
@@ -53,14 +49,13 @@ export default function SelectForm() {
   const form = useForm<ImageOpts>({
     resolver: zodResolver(imageOptsSchema),
     defaultValues: {
-      model: "sd_xl_base_1.0.safetensors [be9edd61]",
+      model: "black-forest-labs/flux-schnell",
       prompt: "",
       negative_prompt: "",
-      steps: [20],
-      cfg_scale: [7],
+      steps: [8],
+      guidance_scale: [7],
       seed: 8926958723,
-      api_key: GetApiKey(),
-      sampler: "DPM++ 2M Karras",
+      // api_key removed; handled server-side
       width: 1024,
       height: 1024,
     },
@@ -76,11 +71,10 @@ export default function SelectForm() {
       }
       setState(State.Checking);
       setState(State.Initializing);
-      const { job } = await generateImage(data);
+      const { imageUrl } = await generateImage(data);
       setState(State.Generating);
-      const url = await getImageUrl(job, data.api_key!);
       setState(State.Downloading);
-      const base64 = await getBase64Image(url);
+      const base64 = await getBase64Image(imageUrl);
       setBase64Data(base64);
       setState(State.Next);
     } catch (error: any) {
@@ -101,10 +95,6 @@ export default function SelectForm() {
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row gap-4 w-full">
                   <Model />
-                  <Sampler />
-                </div>
-                <div className="flex flex-row gap-4 w-full">
-                  <APIKey />
                   <Seed />
                 </div>
                 <div className="flex flex-col lg:flex-row gap-4">
@@ -140,26 +130,6 @@ export default function SelectForm() {
         </Form>
       </div>
       <div className="w-full flex flex-col gap-4 items-center p-6">
-        <div className="flex flex-row gap-4">
-          <a
-            href="https://storage.googleapis.com/craiyonbooklet/brochure.pdf"
-            target="_blank"
-          >
-            <Button className="px-8 flex flex-row items-center gap-2">
-              <p>Brochure</p>
-              <LinkIcon className="w-4 h-4" />
-            </Button>
-          </a>
-          <a
-            href="https://storage.googleapis.com/craiyonbooklet/guideline.pdf"
-            target="_blank"
-          >
-            <Button className="px-8 flex flex-row items-center gap-2">
-              <p>Guidelines</p>
-              <LinkIcon className="w-4 h-4" />
-            </Button>
-          </a>
-        </div>
         {state >= State.Initializing && state <= State.Downloading ? (
           <Skeleton className="rounded-xl w-80 h-80 lg:w-[36rem] lg:h-[36rem]" />
         ) : (

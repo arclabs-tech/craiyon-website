@@ -31,7 +31,7 @@ function Model() {
       render={({ field }) => (
         <FormItem className="w-full">
           <FormLabel>Diffusion Model</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value} disabled>
+          <Select onValueChange={field.onChange} value={field.value}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select model" />
@@ -112,8 +112,8 @@ function Steps() {
             <Slider
               onValueChange={field.onChange}
               value={field.value}
-              min={10}
-              max={25}
+              min={1}
+              max={16}
               step={1}
             />
           </FormControl>
@@ -125,26 +125,26 @@ function Steps() {
   );
 }
 
-function CFGScale() {
+function GuidanceScale() {
   const form = useContext(formContext);
   if (!form) return;
   return (
     <FormField
       control={form.control}
-      name="cfg_scale"
+      name="guidance_scale"
       render={({ field }) => (
         <FormItem className="w-full">
-          <FormLabel>CFG Scale {field.value || 7}</FormLabel>
+          <FormLabel>Guidance Scale {field.value || 7}</FormLabel>
           <FormControl>
             <Slider
               onValueChange={field.onChange}
               value={field.value}
               min={0}
-              max={20}
-              step={1}
+              max={100}
+              step={0.1}
             />
           </FormControl>
-          <FormDescription>CFG Scale</FormDescription>
+          <FormDescription>Guidance Scale</FormDescription>
           <FormMessage />
         </FormItem>
       )}
@@ -174,28 +174,7 @@ function Seed() {
                   field.onChange(numValue);
                 }
               }}
-              disabled
             />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-function Sampler() {
-  const form = useContext(formContext);
-  if (!form) return;
-  return (
-    <FormField
-      control={form.control}
-      name="sampler"
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>Sampler</FormLabel>
-          <FormControl>
-            <Input disabled placeholder="Sampler Name..." {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -268,36 +247,16 @@ function Height() {
   );
 }
 
-function APIKey() {
-  const form = useContext(formContext);
-  if (!form) return;
-  return (
-    <FormField
-      control={form.control}
-      name="api_key"
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>API Key</FormLabel>
-          <FormControl>
-            <Input placeholder="API Key..." {...field} disabled />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
+
 
 export {
   Model,
   Prompt,
   NegativePrompt,
   Steps,
-  CFGScale,
+  GuidanceScale as CFGScale,
   Seed,
-  Sampler,
   Width,
   Height,
-  APIKey,
   formContext,
 };

@@ -3,75 +3,84 @@
 import axios from "axios";
 
 import { type ImageOpts } from "@/lib/schemas";
+import { GetApiKey } from "@/lib/api-keys";
 
-type ResponseProps = {
-  job: string;
-  status: string;
+type ImageGenerationResponse = {
+  data: Array<{
+    url?: string;
+    b64_json?: string;
+  }>;
+  id: string;
 };
 
 async function generateImage(opts: ImageOpts) {
-  let url: string;
-  let width: number;
-  let height: number;
-  if (opts.model === "sd_xl_base_1.0.safetensors [be9edd61]") {
-    url = "https://api.prodia.com/v1/sdxl/generate";
-    width = 1024;
-    height = 1024;
-  } else if (opts.model === "v1-5-pruned-emaonly.safetensors [d7049739]") {
-    url = "https://api.prodia.com/v1/sd/generate";
-    width = 768;
-    height = 768;
-  } else {
-    throw new Error(`Invalid model: ${opts.model}`);
-  }
-  const body = {
-    ...opts,
-    steps: opts.steps[0],
-    cfg_scale: opts.cfg_scale[0],
-    width: width,
-    height: height,
-  };
-  const apiKey = body.api_key;
-  delete body.api_key;
+  const url = "https://api.studio.nebius.com/v1/images/generations";
+  const apiKey = GetApiKey();
 
-  const { data, status } = await axios.post<ResponseProps>(url, body, {
+  // Build request body with only supported parameters
+  const body: any = {
+    model: opts.model,
+    prompt: opts.prompt,
+    width: opts.width,
+    height: opts.height,
+    response_format: "url",
+  };
+
+  // Add optional parameters only if they have valid values
+  if (opts.negative_prompt && opts.negative_prompt.trim() !== "") {
+    body.negative_prompt = opts.negative_prompt;
+  }
+  
+  if (opts.steps && opts.steps[0] && opts.steps[0] > 0) {
+    body.num_inference_steps = opts.steps[0];
+  }
+  
+  if (opts.guidance_scale && opts.guidance_scale[0] && opts.guidance_scale[0] > 0) {
+    body.guidance_scale = opts.guidance_scale[0];
+  }
+  
+  if (opts.seed && opts.seed > -1) {
+    body.seed = opts.seed;
+  }
+
+  // Debug log to show the request being made
+  console.log("🚀 Nebius API Request:", {
+    url,
+    method: "POST",
     headers: {
-      "X-Prodia-Key": apiKey,
+      "Authorization": `Bearer ${apiKey.substring(0, 20)}...`, // Truncated for security
       "Content-Type": "application/json",
     },
+    body
   });
-  if (status !== 200)
-    throw new Error(`Error ${status}: Failed to generate image`);
 
-  return data;
-}
-
-type GetImageUrlResponseProps = {
-  job: string;
-  status: string;
-  imageUrl: string;
-};
-
-async function getImageUrl(jobId: string, apiKey: string): Promise<string> {
-  const { data: job, status } = await axios.get<GetImageUrlResponseProps>(
-    `https://api.prodia.com/v1/job/${jobId}`,
-    {
+  try {
+    const { data, status } = await axios.post<ImageGenerationResponse>(url, body, {
       headers: {
-        "X-Prodia-Key": apiKey,
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
       },
-    }
-  );
-  if (status !== 200)
-    throw new Error(`Error ${status}: Failed to get image url`);
-
-  if (job.status === "succeeded") {
-    return job.imageUrl;
-  } else {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        getImageUrl(jobId, apiKey).then(resolve).catch(reject);
-      }, 2000);
     });
+    
+    if (status !== 200)
+      throw new Error(`Error ${status}: Failed to generate image`);
+
+    if (!data.data || data.data.length === 0 || !data.data[0].url) {
+      throw new Error("No image generated");
+    }
+
+    return { imageUrl: data.data[0].url };
+  } catch (error: any) {
+    if (error.response) {
+      // Log the full error response for debugging
+      console.error("Nebius API Error:", {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers
+      });
+      throw new Error(`API Error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+    }
+    throw error;
   }
 }
 
@@ -105,4 +114,4 @@ async function getEmbedding(imageData: string): Promise<Float32Array> {
   return new Float32Array(data.embedding);
 }
 
-export { generateImage, getImageUrl, getBase64Image, getEmbedding };
+export { generateImage, getBase64Image, getEmbedding };
