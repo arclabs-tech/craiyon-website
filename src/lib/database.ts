@@ -1,4 +1,4 @@
-import { Kysely, SqliteDialect } from 'kysely';
+import { Kysely, SqliteDialect, sql } from 'kysely';
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
@@ -46,6 +46,14 @@ if (!fs.existsSync(dataDir)) {
 }
 
 const sqlite = new Database(dbPath);
+// Improve concurrency for multiple users: enable WAL and set a busy timeout
+try {
+  sqlite.pragma('journal_mode = WAL');
+  sqlite.pragma('busy_timeout = 5000');
+  sqlite.pragma('synchronous = NORMAL');
+} catch (_e) {
+  // ignore pragma errors in environments that don't support them
+}
 
 export const db = new Kysely<Database>({
   dialect: new SqliteDialect({
@@ -64,7 +72,7 @@ export async function initializeDatabase() {
       .addColumn('username', 'text', (col) => col.notNull().unique())
       .addColumn('password', 'text', (col) => col.notNull())
       .addColumn('total_score', 'integer', (col) => col.notNull().defaultTo(0))
-      .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(db.fn.now()))
+  .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(sql`(CURRENT_TIMESTAMP)`))
       .execute();
 
     // Create challenges table
@@ -74,7 +82,7 @@ export async function initializeDatabase() {
       .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
       .addColumn('image_url', 'text', (col) => col.notNull())
       .addColumn('prompt', 'text', (col) => col.notNull())
-      .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(db.fn.now()))
+  .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(sql`(CURRENT_TIMESTAMP)`))
       .execute();
 
     // Create submissions table
@@ -87,7 +95,7 @@ export async function initializeDatabase() {
       .addColumn('generated_image_url', 'text', (col) => col.notNull())
       .addColumn('user_prompt', 'text', (col) => col.notNull())
       .addColumn('score', 'real', (col) => col.notNull())
-      .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(db.fn.now()))
+  .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(sql`(CURRENT_TIMESTAMP)`))
       .execute();
 
     // Create submission counts table
@@ -98,8 +106,17 @@ export async function initializeDatabase() {
       .addColumn('user_id', 'integer', (col) => col.notNull())
       .addColumn('challenge_id', 'integer', (col) => col.notNull())
       .addColumn('attempts_used', 'integer', (col) => col.notNull().defaultTo(0))
-      .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(db.fn.now()))
-      .addColumn('updated_at', 'text', (col) => col.notNull().defaultTo(db.fn.now()))
+  .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(sql`(CURRENT_TIMESTAMP)`))
+  .addColumn('updated_at', 'text', (col) => col.notNull().defaultTo(sql`(CURRENT_TIMESTAMP)`))
+      .execute();
+
+    // Ensure uniqueness on (user_id, challenge_id) to prevent duplicate rows
+    await db.schema
+      .createIndex('uniq_submission_counts_user_challenge')
+      .on('submission_counts')
+      .columns(['user_id', 'challenge_id'])
+      .unique()
+      .ifNotExists()
       .execute();
 
     console.log('Database initialized successfully');
