@@ -219,9 +219,6 @@ export default function ChallengeGrid() {
               </div>
                                         <div className="text-center">
                 <h3 className="font-semibold text-lg mb-2 text-slate-800 dark:text-slate-200">Challenge {challenge.id}</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-2">
-                  {challenge.prompt}
-                </p>
                 {(() => {
                   const count = submissionCounts.find(c => c.challengeId === challenge.id);
                   const used = count?.attemptsUsed || 0;

@@ -37,16 +37,16 @@ export default function Header({ user }: HeaderProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Craiyon Challenge
+              <img src="/craiyon-logo.svg" alt="Craiyon Logo" className="w-48 drop-shadow-lg" />
             </h1>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="text-right">
               <p className="text-sm text-slate-600 dark:text-slate-400">Welcome</p>
               <p className="font-semibold text-slate-800 dark:text-slate-200">{user.username}</p>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -57,7 +57,7 @@ export default function Header({ user }: HeaderProps) {
                 <Home className="w-4 h-4 mr-2" />
                 Home
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -67,7 +67,7 @@ export default function Header({ user }: HeaderProps) {
                 <Trophy className="w-4 h-4 mr-2" />
                 Leaderboard
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -77,6 +77,12 @@ export default function Header({ user }: HeaderProps) {
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
+
+              <div className="flex flex-row items-center justify-center gap-8 mr-2 ml-16">
+                <img src="/logo_light.png" alt="Arclabs Logo" className="h-8 drop-shadow" />
+                <img src="/aiml-logo.svg" alt="AIML Logo" className="h-8 drop-shadow" />
+                <img src="/aura-logo.svg" alt="Aura Logo" className="h-8 drop-shadow" />
+              </div>
             </div>
           </div>
         </div>

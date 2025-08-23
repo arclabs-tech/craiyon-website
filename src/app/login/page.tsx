@@ -44,7 +44,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700">
+      <img src="/craiyon-logo.svg" alt="Craiyon Logo" className="mb-6 w-96 drop-shadow-lg" />
       <Card className="w-full max-w-md bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-slate-200 dark:border-slate-700 shadow-xl">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Login</CardTitle>
@@ -79,6 +80,11 @@ export default function LoginPage() {
           {/* Credential hints removed intentionally */}
         </CardContent>
       </Card>
+      <div className="flex flex-row items-center justify-center gap-8 mt-8">
+        <img src="/logo_light.png" alt="Arclabs Logo" className="h-16 drop-shadow" />
+        <img src="/aiml-logo.svg" alt="AIML Logo" className="h-16 drop-shadow" />
+        <img src="/aura-logo.svg" alt="Aura Logo" className="h-16 drop-shadow" />
+      </div>
     </div>
   );
 } 
