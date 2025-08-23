@@ -3,7 +3,7 @@
 import { User } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { LogOut, Trophy, Home } from 'lucide-react';
+import { LogOut, Trophy, Home, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface HeaderProps {
