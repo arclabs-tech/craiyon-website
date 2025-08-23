@@ -7,11 +7,16 @@ import { compareImages, calculateScoreBasedOnPrompt } from '@/lib/image-comparis
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();
-    const { challengeId, userPrompt } = await request.json();
+  const body = await request.json().catch(() => null);
+  const challengeIdRaw = body?.challengeId;
+  const userPrompt: string | undefined = body?.userPrompt;
+    const challengeId = typeof challengeIdRaw === 'string' || typeof challengeIdRaw === 'number'
+      ? Number(challengeIdRaw)
+      : NaN;
 
-    if (!challengeId || !userPrompt) {
+    if (!Number.isFinite(challengeId) || !userPrompt || !userPrompt.trim()) {
       return NextResponse.json(
-        { error: 'Challenge ID and prompt are required' },
+        { error: 'Challenge ID (number) and non-empty prompt are required' },
         { status: 400 }
       );
     }
@@ -23,7 +28,7 @@ export async function POST(request: NextRequest) {
       .where('id', '=', challengeId)
       .executeTakeFirst();
 
-    if (!challenge) {
+  if (!challenge || !challenge.prompt || !challenge.image_url) {
       return NextResponse.json(
         { error: 'Challenge not found' },
         { status: 404 }
@@ -48,8 +53,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate image using the existing generateImage function
-    const generatedImageUrl = await generateImage(userPrompt);
+  const cleanedPrompt = userPrompt.trim();
+  // Generate image using the existing generateImage function
+  const generatedImageUrl = await generateImage({ opts: cleanedPrompt, user: user.username });
 
     if (!generatedImageUrl) {
       return NextResponse.json(
@@ -60,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate score using both methods
   const imageScore = await compareImages(challenge.image_url, generatedImageUrl);
-    const promptScore = calculateScoreBasedOnPrompt(challenge.prompt, userPrompt);
+  const promptScore = calculateScoreBasedOnPrompt(challenge.prompt, cleanedPrompt);
     
     // Use the higher score
   const finalScore = Math.max(imageScore, promptScore);
