@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/database';
 
+// Ensure this endpoint is never statically cached
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const leaderboard = await db
@@ -10,10 +13,17 @@ export async function GET() {
       .limit(50)
       .execute();
 
-    return NextResponse.json({
-      success: true,
-      leaderboard,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        leaderboard,
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store',
+        },
+      }
+    );
   } catch (error) {
     console.error('Leaderboard error:', error);
     return NextResponse.json(

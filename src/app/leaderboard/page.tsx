@@ -24,7 +24,7 @@ export default function LeaderboardPage() {
 
   const fetchLeaderboard = async () => {
     try {
-      const response = await fetch('/api/leaderboard');
+  const response = await fetch('/api/leaderboard', { cache: 'no-store' });
       const data = await response.json();
       
       if (data.success) {

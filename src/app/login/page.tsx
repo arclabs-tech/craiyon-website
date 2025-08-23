@@ -48,9 +48,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-slate-200 dark:border-slate-700 shadow-xl">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Login</CardTitle>
-          <CardDescription className="text-center text-slate-600 dark:text-slate-400">
-            Enter your credentials to access the image generation challenge
-          </CardDescription>
+          <CardDescription className="text-center text-slate-600 dark:text-slate-400" />
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -59,7 +57,6 @@ export default function LoginPage() {
               <Input
                 id="username"
                 type="text"
-                placeholder="e.g., SEAT001"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -70,7 +67,6 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="e.g., S1"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -80,10 +76,7 @@ export default function LoginPage() {
               {loading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
-          <div className="mt-4 text-sm text-slate-600 dark:text-slate-400 text-center">
-            <p>Use format: SEAT001, SEAT002, etc.</p>
-            <p>Password: S1, S2, S3, etc.</p>
-          </div>
+          {/* Credential hints removed intentionally */}
         </CardContent>
       </Card>
     </div>
