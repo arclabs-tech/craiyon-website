@@ -151,13 +151,12 @@ export async function compareImages(originalImageUrl: string, generatedImageUrl:
     const cosSim = cosineSimilarity(origEmb, genEmb);
     console.log(`🎯 Raw cosine similarity: ${cosSim.toFixed(4)}`);
 
-    // Map to honest score
-    const finalScore = mapSimilarityToScore(cosSim);
+    // Return raw cosine similarity (no mapping/inflation)
+    const finalScore = Math.max(0, cosSim); // Only ensure non-negative
     const roundedScore = Math.round(finalScore * 100) / 100;
     
     const elapsed = Date.now() - startTime;
-    console.log(`✅ Final similarity score: ${roundedScore} (${elapsed}ms)`);
-    console.log(`📈 Mapping: cosine ${cosSim.toFixed(4)} → score ${roundedScore}`);
+    console.log(`✅ Raw similarity score: ${roundedScore} (${elapsed}ms)`);
     
     return roundedScore;
     
@@ -165,8 +164,8 @@ export async function compareImages(originalImageUrl: string, generatedImageUrl:
     const elapsed = Date.now() - startTime;
     console.error(`❌ Image comparison failed after ${elapsed}ms:`, error);
     
-    // More conservative fallback - no fake high scores
-    const fallbackScore = 0.55 + Math.random() * 0.15; // 0.55-0.70 range
+    // Conservative fallback - return low similarity on error
+    const fallbackScore = 0.15 + Math.random() * 0.10; // 0.15-0.25 range
     const roundedFallback = Math.round(fallbackScore * 100) / 100;
     
     console.log(`🔄 Using conservative fallback score: ${roundedFallback}`);
