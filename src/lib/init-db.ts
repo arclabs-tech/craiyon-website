@@ -4,27 +4,27 @@ import { db, initializeDatabase } from './database';
 const challenges = [
   {
     image_url: '/images/1.png',
-    prompt: 'A majestic dragon flying over a medieval castle at sunset',
+    prompt: 'Happy Dog',
   },
   {
     image_url: '/images/2.png',
-    prompt: 'A futuristic cityscape with flying cars and neon lights',
+    prompt: 'Space',
   },
   {
     image_url: '/images/3.png',
-    prompt: 'A serene forest with a magical glowing tree in the center',
+    prompt: 'Food',
   },
   {
     image_url: '/images/4.png',
-    prompt: 'A steampunk robot playing chess in a Victorian library',
+    prompt: 'The Throne',
   },
   {
     image_url: '/images/5.png',
-    prompt: 'A beautiful underwater palace with mermaids and coral gardens',
+    prompt: 'Vibes',
   },
   {
     image_url: '/images/6.png',
-    prompt: 'A space station orbiting Earth with astronauts floating outside',
+    prompt: 'Red Aura',
   },
 ];
 

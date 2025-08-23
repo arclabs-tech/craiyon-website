@@ -82,12 +82,12 @@ The system automatically creates 200 user accounts:
 ## Challenge Images
 
 The 6 challenge images are:
-1. A majestic dragon flying over a medieval castle at sunset
-2. A futuristic cityscape with flying cars and neon lights
-3. A serene forest with a magical glowing tree in the center
-4. A steampunk robot playing chess in a Victorian library
-5. A beautiful underwater palace with mermaids and coral gardens
-6. A space station orbiting Earth with astronauts floating outside
+1. Happy Dog
+2. Astro Horse
+3. Hot Soup
+4. The Throne 
+5. Vibing Girl
+6. Red Aura
 
 ## Technical Details
 
