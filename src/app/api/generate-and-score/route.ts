@@ -73,14 +73,27 @@ export async function POST(request: NextRequest) {
     // Use the higher score
     const finalScore = Math.max(imageScore, promptScore);
     
-    console.log(`📊 Final score: ${finalScore} (max of image and prompt)`);    // Save submission to database
+    console.log(`📊 Final score: ${finalScore} (max of image and prompt)`);
+
+    // Get user's CURRENT best score for this challenge BEFORE saving new submission
+    const previousBest = await db
+      .selectFrom('submissions')
+      .select((eb) => eb.fn.max('score').as('max_score'))
+      .where('user_id', '=', user.id)
+      .where('challenge_id', '=', challengeId)
+      .executeTakeFirst();
+
+    const currentBest = Number(previousBest?.max_score) || 0;
+    console.log(`📈 Previous best for challenge ${challengeId}: ${currentBest.toFixed(2)}, New score: ${finalScore.toFixed(2)}`);
+
+    // Save submission to database
     const submission = await db
       .insertInto('submissions')
       .values({
         user_id: user.id,
         challenge_id: challengeId,
         generated_image_url: generatedImageUrl,
-        user_prompt: userPrompt,
+        user_prompt: cleanedPrompt,
         score: finalScore,
       })
       .returning(['id', 'score'])
@@ -110,16 +123,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user's total score using max score per challenge approach
-    // First get user's best score for this challenge
-    const bestExistingScore = await db
-      .selectFrom('submissions')
-      .select((eb) => eb.fn.max('score').as('max_score'))
-      .where('user_id', '=', user.id)
-      .where('challenge_id', '=', challengeId)
-      .executeTakeFirst();
-
-    const currentBest = bestExistingScore?.max_score || 0;
-    
     // Only update total if this is a new personal best for this challenge
     if (finalScore > currentBest) {
       const scoreImprovement = finalScore - currentBest;
