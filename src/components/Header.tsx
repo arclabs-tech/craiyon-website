@@ -3,7 +3,7 @@
 import { User } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { LogOut, Trophy, Home } from 'lucide-react';
+import { LogOut, Trophy, Home, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface HeaderProps {
@@ -66,6 +66,16 @@ export default function Header({ user }: HeaderProps) {
               >
                 <Trophy className="w-4 h-4 mr-2" />
                 Leaderboard
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push('/gallery')}
+                className="hover:bg-slate-100 dark:hover:bg-slate-700"
+              >
+                <ImageIcon className="w-4 h-4 mr-2" />
+                Gallery
               </Button>
 
               <Button
