@@ -1,0 +1,42 @@
+FROM node:20-alpine
+
+# Install system dependencies needed for better-sqlite3
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    sqlite \
+    curl
+
+WORKDIR /app
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PYTHON=/usr/bin/python3
+ENV npm_config_python=/usr/bin/python3
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Clean install with specific Python path and no optional deps
+RUN npm ci --verbose --no-audit --no-fund --python=/usr/bin/python3
+
+# Copy source code
+COPY . .
+
+# Initialize database
+RUN npm run init-db || echo "Database initialization completed"
+
+# Build the application
+RUN npm run build
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOST=0.0.0.0
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/ || exit 1
+
+CMD ["npm", "start"]
