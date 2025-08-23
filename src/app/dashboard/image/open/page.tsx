@@ -49,14 +49,14 @@ export default function SelectForm() {
   const form = useForm<ImageOpts>({
     resolver: zodResolver(imageOptsSchema),
     defaultValues: {
-      model: "sd_xl_base_1.0.safetensors [be9edd61]",
+      model: "black-forest-labs/FLUX.1-schnell",
       prompt: "",
       negative_prompt: "",
-      steps: [20],
-      cfg_scale: [7],
+      steps: [4],
+      cfg_scale: [1],
       seed: -1,
       api_key: "",
-      sampler: "DPM++ 2M Karras",
+      sampler: "euler",
       width: 1024,
       height: 1024,
     },
@@ -73,9 +73,9 @@ export default function SelectForm() {
       }
       setState(State.Checking);
       setState(State.Initializing);
-      const { job } = await generateImage(data);
+      const nebiusResponse = await generateImage(data);
       setState(State.Generating);
-      const url = await getImageUrl(job, data.api_key!);
+      const url = await getImageUrl(nebiusResponse, data.api_key!);
       setState(State.Downloading);
       const base64 = await getBase64Image(url);
       setBase64Data(base64);
