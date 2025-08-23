@@ -13,34 +13,62 @@ type ImageGenerationResponse = {
   id: string;
 };
 
-async function generateImage(opts: ImageOpts) {
+async function generateImage(opts: ImageOpts | string) {
   const url = "https://api.studio.nebius.com/v1/images/generations";
   const apiKey = GetApiKey();
 
-  // Build request body with only supported parameters
+  // Handle both string prompt and ImageOpts object
+  let prompt: string;
+  let model: string;
+  let width: number;
+  let height: number;
+  let negative_prompt: string = "";
+  let steps: number = 8;
+  let guidance_scale: number = 7;
+  let seed: number = -1;
+
+  if (typeof opts === 'string') {
+    // Simple string prompt - use defaults
+    prompt = opts;
+    model = "black-forest-labs/flux-schnell";
+    width = 1024;
+    height = 1024;
+  } else {
+    // ImageOpts object
+    prompt = opts.prompt;
+    model = opts.model;
+    width = opts.width;
+    height = opts.height;
+    negative_prompt = opts.negative_prompt || "";
+    steps = opts.steps?.[0] || 8;
+    guidance_scale = opts.guidance_scale?.[0] || 7;
+    seed = opts.seed || -1;
+  }
+
+  // Build request body with required parameters
   const body: any = {
-    model: opts.model,
-    prompt: opts.prompt,
-    width: opts.width,
-    height: opts.height,
+    model: model,
+    prompt: prompt,
+    width: width,
+    height: height,
     response_format: "url",
   };
 
   // Add optional parameters only if they have valid values
-  if (opts.negative_prompt && opts.negative_prompt.trim() !== "") {
-    body.negative_prompt = opts.negative_prompt;
+  if (negative_prompt && negative_prompt.trim() !== "") {
+    body.negative_prompt = negative_prompt;
   }
   
-  if (opts.steps && opts.steps[0] && opts.steps[0] > 0) {
-    body.num_inference_steps = opts.steps[0];
+  if (steps > 0) {
+    body.num_inference_steps = steps;
   }
   
-  if (opts.guidance_scale && opts.guidance_scale[0] && opts.guidance_scale[0] > 0) {
-    body.guidance_scale = opts.guidance_scale[0];
+  if (guidance_scale > 0) {
+    body.guidance_scale = guidance_scale;
   }
   
-  if (opts.seed && opts.seed > -1) {
-    body.seed = opts.seed;
+  if (seed > -1) {
+    body.seed = seed;
   }
 
   // Debug log to show the request being made
@@ -69,7 +97,7 @@ async function generateImage(opts: ImageOpts) {
       throw new Error("No image generated");
     }
 
-    return { imageUrl: data.data[0].url };
+    return data.data[0].url;
   } catch (error: any) {
     if (error.response) {
       // Log the full error response for debugging

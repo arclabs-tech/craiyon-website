@@ -1,0 +1,134 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth';
+import { db } from '@/lib/database';
+import { generateImage } from '@/actions/generateImage';
+import { compareImages, calculateScoreBasedOnPrompt } from '@/lib/image-comparison';
+
+export async function POST(request: NextRequest) {
+  try {
+    const user = await requireAuth();
+    const { challengeId, userPrompt } = await request.json();
+
+    if (!challengeId || !userPrompt) {
+      return NextResponse.json(
+        { error: 'Challenge ID and prompt are required' },
+        { status: 400 }
+      );
+    }
+
+    // Get the challenge details
+    const challenge = await db
+      .selectFrom('challenges')
+      .select(['id', 'image_url', 'prompt'])
+      .where('id', '=', challengeId)
+      .executeTakeFirst();
+
+    if (!challenge) {
+      return NextResponse.json(
+        { error: 'Challenge not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check submission count for this challenge
+    const submissionCount = await db
+      .selectFrom('submission_counts')
+      .select(['attempts_used'])
+      .where('user_id', '=', user.id)
+      .where('challenge_id', '=', challengeId)
+      .executeTakeFirst();
+
+    const attemptsUsed = submissionCount?.attempts_used || 0;
+    const attemptsRemaining = 6 - attemptsUsed;
+
+    if (attemptsRemaining <= 0) {
+      return NextResponse.json(
+        { error: 'You have used all 6 attempts for this challenge' },
+        { status: 400 }
+      );
+    }
+
+    // Generate image using the existing generateImage function
+    const generatedImageUrl = await generateImage(userPrompt);
+
+    if (!generatedImageUrl) {
+      return NextResponse.json(
+        { error: 'Failed to generate image' },
+        { status: 500 }
+      );
+    }
+
+    // Calculate score using both methods
+    const imageScore = compareImages(challenge.image_url, generatedImageUrl);
+    const promptScore = calculateScoreBasedOnPrompt(challenge.prompt, userPrompt);
+    
+    // Use the higher score
+    const finalScore = Math.max(imageScore, promptScore);
+
+    // Save submission to database
+    const submission = await db
+      .insertInto('submissions')
+      .values({
+        user_id: user.id,
+        challenge_id: challengeId,
+        generated_image_url: generatedImageUrl,
+        user_prompt: userPrompt,
+        score: finalScore,
+      })
+      .returning(['id', 'score'])
+      .executeTakeFirst();
+
+    // Update or create submission count
+    try {
+      await db
+        .insertInto('submission_counts')
+        .values({
+          user_id: user.id,
+          challenge_id: challengeId,
+          attempts_used: 1,
+        })
+        .execute();
+    } catch (error) {
+      // If insert fails due to unique constraint, update instead
+      await db
+        .updateTable('submission_counts')
+        .set((eb) => ({
+          attempts_used: eb('attempts_used', '+', 1),
+          updated_at: eb.val('datetime(\'now\')'),
+        }))
+        .where('user_id', '=', user.id)
+        .where('challenge_id', '=', challengeId)
+        .execute();
+    }
+
+    // Update user's total score
+    await db
+      .updateTable('users')
+      .set((eb) => ({
+        total_score: eb('total_score', '+', finalScore)
+      }))
+      .where('id', '=', user.id)
+      .execute();
+
+    const newAttemptsUsed = attemptsUsed + 1;
+    const newAttemptsRemaining = 6 - newAttemptsUsed;
+
+    return NextResponse.json({
+      success: true,
+      submission: {
+        id: submission?.id,
+        score: submission?.score,
+        generated_image_url: generatedImageUrl,
+      },
+      attemptsUsed: newAttemptsUsed,
+      attemptsRemaining: newAttemptsRemaining,
+      canSubmit: newAttemptsRemaining > 0
+    });
+  } catch (error) {
+    console.error('Generate and score error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+} 

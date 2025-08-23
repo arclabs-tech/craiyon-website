@@ -41,3 +41,9 @@ next-env.d.ts
 !.elasticbeanstalk/*.global.yml
 
 .env*
+
+# Database
+/data
+*.db
+*.sqlite
+*.sqlite3
