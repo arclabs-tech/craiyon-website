@@ -2,6 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { getBase64Image, getEmbedding } from '@/actions/generateImage';
 
+// Cache for embeddings to avoid recomputation
+const embeddingCache = new Map<string, Float32Array>();
+
 // Enhanced cosine similarity with better numerical stability
 function cosineSimilarity(a: Float32Array, b: Float32Array): number {
   if (a.length !== b.length) {
@@ -75,6 +78,56 @@ function validateEmbedding(embedding: Float32Array, name: string): boolean {
   return true;
 }
 
+// Get embedding with retry logic and caching
+async function getEmbeddingWithRetry(base64Data: string, name: string, maxRetries = 3): Promise<Float32Array> {
+  // Create cache key from first 100 chars of base64 (enough to identify image)
+  const cacheKey = base64Data.substring(0, 100);
+  
+  // Check cache first
+  if (embeddingCache.has(cacheKey)) {
+    console.log(`🎯 Using cached embedding for ${name}`);
+    return embeddingCache.get(cacheKey)!;
+  }
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`🧠 Computing embedding for ${name} (attempt ${attempt}/${maxRetries})...`);
+      
+      const embedding = await Promise.race([
+        getEmbedding(base64Data),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error(`Embedding timeout after 20s`)), 20000)
+        )
+      ]);
+      
+      // Validate embedding
+      if (!validateEmbedding(embedding, name)) {
+        throw new Error(`Invalid embedding received for ${name}`);
+      }
+      
+      // Cache successful result
+      embeddingCache.set(cacheKey, embedding);
+      console.log(`✅ Successfully computed and cached embedding for ${name}`);
+      
+      return embedding;
+      
+    } catch (error) {
+      console.warn(`⚠️ Embedding attempt ${attempt}/${maxRetries} failed for ${name}:`, error);
+      
+      if (attempt === maxRetries) {
+        throw new Error(`Failed to get embedding for ${name} after ${maxRetries} attempts: ${error}`);
+      }
+      
+      // Wait before retry (exponential backoff)
+      const waitTime = 1000 * Math.pow(2, attempt - 1);
+      console.log(`⏳ Waiting ${waitTime}ms before retry...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+  }
+  
+  throw new Error(`Exhausted all retry attempts for ${name}`);
+}
+
 // More realistic scoring that doesn't inflate similarity
 function mapSimilarityToScore(cosineSim: number): number {
   // Cosine similarity for images typically ranges from 0.1 to 0.95
@@ -128,24 +181,14 @@ export async function compareImages(originalImageUrl: string, generatedImageUrl:
 
     console.log(`📊 Image sizes: orig=${origB64.length} chars, gen=${genB64.length} chars`);
 
-    // Get embeddings with timeout and validation
-    console.log('🧠 Computing embeddings...');
-    const [origEmb, genEmb] = await Promise.race([
-      Promise.all([
-        getEmbedding(origB64),
-        getEmbedding(genB64),
-      ]),
-      new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout computing embeddings')), 30000)
-      )
+    // Get embeddings with retry and validation
+    console.log('🧠 Computing embeddings with retry logic...');
+    const [origEmb, genEmb] = await Promise.all([
+      getEmbeddingWithRetry(origB64, 'original'),
+      getEmbeddingWithRetry(genB64, 'generated'),
     ]);
 
     console.log(`📐 Embeddings: orig=${origEmb.length}D, gen=${genEmb.length}D`);
-
-    // Validate embeddings
-    if (!validateEmbedding(origEmb, 'original') || !validateEmbedding(genEmb, 'generated')) {
-      throw new Error('Invalid embeddings detected');
-    }
 
     // Calculate cosine similarity
     const cosSim = cosineSimilarity(origEmb, genEmb);
