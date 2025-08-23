@@ -1,41 +1,25 @@
-'use client';
 
-import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trophy, Medal, Award, ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import Header from '@/components/Header';
+import { getCurrentUser } from '@/lib/auth';
 
-interface LeaderboardEntry {
-  id: number;
-  username: string;
-  total_score: number;
+async function getLeaderboard() {
+  // Fetch leaderboard from the database, ordered by total_score desc
+  const users = await (await import('@/lib/database')).db
+    .selectFrom('users')
+    .select(['id', 'username', 'total_score'])
+    .orderBy('total_score', 'desc')
+    .limit(100)
+    .execute();
+  return users;
 }
 
-export default function LeaderboardPage() {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    fetchLeaderboard();
-  }, []);
-
-  const fetchLeaderboard = async () => {
-    try {
-  const response = await fetch('/api/leaderboard', { cache: 'no-store' });
-      const data = await response.json();
-      
-      if (data.success) {
-        setLeaderboard(data.leaderboard);
-      }
-    } catch (error) {
-      console.error('Error fetching leaderboard:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+export default async function LeaderboardPage() {
+  const user = await getCurrentUser();
+  const leaderboard = await getLeaderboard();
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Trophy className="w-5 h-5 text-yellow-500" />;
@@ -51,33 +35,11 @@ export default function LeaderboardPage() {
     return <Badge variant="secondary">#{rank}</Badge>;
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading leaderboard...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 p-4">
+    <>
+      {user && <Header user={user} />}
       <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
-        <div className="mb-4">
-          <Button
-            variant="outline"
-            onClick={() => router.push('/')}
-            className="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Challenges
-          </Button>
-        </div>
-
-        <Card className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-slate-200 dark:border-slate-700 shadow-xl">
+        <Card className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-slate-200 dark:border-slate-700 shadow-xl mt-8">
           <CardHeader>
             <CardTitle className="text-3xl font-bold text-center flex items-center justify-center gap-2">
               <Trophy className="w-8 h-8 text-yellow-500" />
@@ -120,7 +82,6 @@ export default function LeaderboardPage() {
                 </div>
               ))}
             </div>
-            
             {leaderboard.length === 0 && (
               <div className="text-center py-8">
                 <p className="text-slate-600 dark:text-slate-400">
@@ -131,6 +92,6 @@ export default function LeaderboardPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
   );
-} 
+}

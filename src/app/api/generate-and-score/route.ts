@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate image using the existing generateImage function
-    const generatedImageUrl = await generateImage(userPrompt);
+    const generatedImageUrl = await generateImage({ opts: userPrompt, user: `${user.id}` });
 
     if (!generatedImageUrl) {
       return NextResponse.json(

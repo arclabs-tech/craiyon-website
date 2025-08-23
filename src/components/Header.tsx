@@ -37,7 +37,14 @@ export default function Header({ user }: HeaderProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              <img src="/craiyon-logo.svg" alt="Craiyon Logo" className="w-48 drop-shadow-lg" />
+              <button
+                type="button"
+                onClick={() => router.push('/')}
+                className="focus:outline-none"
+                aria-label="Go to home"
+              >
+                <img src="/craiyon-logo.svg" alt="Craiyon Logo" className="w-48 drop-shadow-lg" />
+              </button>
             </h1>
           </div>
 
@@ -65,6 +72,7 @@ export default function Header({ user }: HeaderProps) {
                 onClick={() => router.push('/gallery')}
                 className="hover:bg-slate-100 dark:hover:bg-slate-700"
               >
+                <ImageIcon className="w-4 h-4 mr-2" />
                 Gallery
               </Button>
 
