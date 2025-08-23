@@ -59,11 +59,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate score using both methods
-    const imageScore = compareImages(challenge.image_url, generatedImageUrl);
+  const imageScore = await compareImages(challenge.image_url, generatedImageUrl);
     const promptScore = calculateScoreBasedOnPrompt(challenge.prompt, userPrompt);
     
     // Use the higher score
-    const finalScore = Math.max(imageScore, promptScore);
+  const finalScore = Math.max(imageScore, promptScore);
 
     // Save submission to database
     const submission = await db
