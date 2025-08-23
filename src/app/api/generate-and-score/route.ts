@@ -109,14 +109,32 @@ export async function POST(request: NextRequest) {
         .execute();
     }
 
-    // Update user's total score
-    await db
-      .updateTable('users')
-      .set((eb) => ({
-        total_score: eb('total_score', '+', finalScore)
-      }))
-      .where('id', '=', user.id)
-      .execute();
+    // Update user's total score using max score per challenge approach
+    // First get user's best score for this challenge
+    const bestExistingScore = await db
+      .selectFrom('submissions')
+      .select((eb) => eb.fn.max('score').as('max_score'))
+      .where('user_id', '=', user.id)
+      .where('challenge_id', '=', challengeId)
+      .executeTakeFirst();
+
+    const currentBest = bestExistingScore?.max_score || 0;
+    
+    // Only update total if this is a new personal best for this challenge
+    if (finalScore > currentBest) {
+      const scoreImprovement = finalScore - currentBest;
+      await db
+        .updateTable('users')
+        .set((eb) => ({
+          total_score: eb('total_score', '+', scoreImprovement)
+        }))
+        .where('id', '=', user.id)
+        .execute();
+      
+      console.log(`🏆 New personal best! Improved by ${scoreImprovement.toFixed(2)} (${currentBest.toFixed(2)} → ${finalScore.toFixed(2)})`);
+    } else {
+      console.log(`📊 Score ${finalScore.toFixed(2)} not better than personal best ${currentBest.toFixed(2)} for this challenge`);
+    }
 
     const newAttemptsUsed = attemptsUsed + 1;
     const newAttemptsRemaining = 6 - newAttemptsUsed;

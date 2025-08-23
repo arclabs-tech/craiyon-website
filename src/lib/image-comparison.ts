@@ -136,7 +136,7 @@ export async function compareImages(originalImageUrl: string, generatedImageUrl:
         getEmbedding(genB64),
       ]),
       new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout computing embeddings')), 15000)
+        setTimeout(() => reject(new Error('Timeout computing embeddings')), 30000)
       )
     ]);
 
