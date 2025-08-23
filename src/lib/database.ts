@@ -1,38 +1,38 @@
-import { Kysely, SqliteDialect, sql } from 'kysely';
+import { Kysely, SqliteDialect, sql, Generated } from 'kysely';
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 
 interface Database {
   users: {
-    id?: number;
+  id: Generated<number>;
     username: string;
     password: string;
     total_score: number;
-    created_at?: string;
+  created_at: Generated<string>;
   };
   challenges: {
-    id?: number;
+  id: Generated<number>;
     image_url: string;
     prompt: string;
-    created_at?: string;
+  created_at: Generated<string>;
   };
   submissions: {
-    id?: number;
+  id: Generated<number>;
     user_id: number;
     challenge_id: number;
     generated_image_url: string;
     user_prompt: string;
     score: number;
-    created_at?: string;
+  created_at: Generated<string>;
   };
   submission_counts: {
-    id?: number;
+  id: Generated<number>;
     user_id: number;
     challenge_id: number;
     attempts_used: number;
-    created_at?: string;
-    updated_at?: string;
+  created_at: Generated<string>;
+  updated_at: Generated<string>;
   };
 }
 
