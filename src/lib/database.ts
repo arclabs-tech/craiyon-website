@@ -5,34 +5,34 @@ import path from 'path';
 
 interface Database {
   users: {
-    id: number;
+    id?: number;
     username: string;
     password: string;
     total_score: number;
-    created_at: string;
+    created_at?: string;
   };
   challenges: {
-    id: number;
+    id?: number;
     image_url: string;
     prompt: string;
-    created_at: string;
+    created_at?: string;
   };
   submissions: {
-    id: number;
+    id?: number;
     user_id: number;
     challenge_id: number;
     generated_image_url: string;
     user_prompt: string;
     score: number;
-    created_at: string;
+    created_at?: string;
   };
   submission_counts: {
-    id: number;
+    id?: number;
     user_id: number;
     challenge_id: number;
     attempts_used: number;
-    created_at: string;
-    updated_at: string;
+    created_at?: string;
+    updated_at?: string;
   };
 }
 

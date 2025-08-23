@@ -30,7 +30,7 @@ COPY . .
 
 # Create data directory and initialize database
 RUN mkdir -p /app/data && \
-    node src/lib/init-db.cjs || echo "Database setup completed"
+    npm run init-db || echo "Database setup completed"
 
 # Build the application (this needs devDependencies)
 RUN npm run build
