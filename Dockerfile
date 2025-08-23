@@ -11,15 +11,14 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables
-ENV NODE_ENV=production
+# Set build-time environment variables (NOT production yet)
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PYTHON=/usr/bin/python3
 
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install ALL dependencies first (including better-sqlite3)
+# Install ALL dependencies (including devDependencies for build)
 RUN npm install --verbose
 
 # Copy source code
@@ -29,8 +28,12 @@ COPY . .
 RUN mkdir -p /app/data && \
     node src/lib/init-db.cjs || echo "Database setup completed"
 
-# Build the application
+# Build the application (this needs devDependencies)
 RUN npm run build
+
+# NOW set production and remove devDependencies
+ENV NODE_ENV=production
+RUN npm prune --omit=dev
 
 EXPOSE 3000
 
