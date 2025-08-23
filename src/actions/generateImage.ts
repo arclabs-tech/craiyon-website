@@ -4,6 +4,8 @@ import axios from "axios";
 
 import { type ImageOpts } from "@/lib/schemas";
 import { GetApiKey } from "@/lib/api-keys";
+import { saveGeneratedImage } from "@/lib/database";
+
 
 type ImageGenerationResponse = {
   data: Array<{
@@ -13,7 +15,12 @@ type ImageGenerationResponse = {
   id: string;
 };
 
-async function generateImage(opts: ImageOpts | string) {
+type GenerateImageParams = {
+  opts: ImageOpts | string;
+  user: string;
+};
+
+async function generateImage({ opts, user }: GenerateImageParams) {
   const url = "https://api.studio.nebius.com/v1/images/generations";
   const apiKey = GetApiKey();
 
@@ -97,7 +104,10 @@ async function generateImage(opts: ImageOpts | string) {
       throw new Error("No image generated");
     }
 
-    return data.data[0].url;
+  const imageUrl = data.data[0].url;
+  // Save to database
+  await saveGeneratedImage({ user, prompt, url: imageUrl });
+  return imageUrl;
   } catch (error: any) {
     if (error.response) {
       // Log the full error response for debugging

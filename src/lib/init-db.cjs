@@ -91,6 +91,17 @@ function initializeDatabase() {
       )
     `);
 
+    // Create generated_images table
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS generated_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user TEXT NOT NULL,
+        prompt TEXT NOT NULL,
+        url TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      )
+    `);
+
     console.log('Database tables created successfully');
   } catch (error) {
     console.error('Error creating tables:', error);

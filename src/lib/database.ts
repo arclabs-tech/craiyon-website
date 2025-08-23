@@ -34,6 +34,13 @@ interface Database {
   created_at: Generated<string>;
   updated_at: Generated<string>;
   };
+  generated_images: {
+    id: Generated<number>;
+    user: string;
+    prompt: string;
+    url: string;
+    created_at: Generated<string>;
+  };
 }
 
 // Ensure data directory exists
@@ -110,6 +117,17 @@ export async function initializeDatabase() {
   .addColumn('updated_at', 'text', (col) => col.notNull().defaultTo(sql`(CURRENT_TIMESTAMP)`))
       .execute();
 
+    // Create generated_images table
+    await db.schema
+      .createTable('generated_images')
+      .ifNotExists()
+      .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
+      .addColumn('user', 'text', (col) => col.notNull())
+      .addColumn('prompt', 'text', (col) => col.notNull())
+      .addColumn('url', 'text', (col) => col.notNull())
+      .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(sql`(CURRENT_TIMESTAMP)`))
+      .execute();
+
     // Ensure uniqueness on (user_id, challenge_id) to prevent duplicate rows
     await db.schema
       .createIndex('uniq_submission_counts_user_challenge')
@@ -124,3 +142,10 @@ export async function initializeDatabase() {
     console.error('Error initializing database:', error);
   }
 } 
+
+// Insert a generated image record
+export async function saveGeneratedImage({ user, prompt, url }: { user: string; prompt: string; url: string }) {
+  await db.insertInto('generated_images')
+    .values({ user, prompt, url })
+    .execute();
+}

@@ -48,15 +48,6 @@ export default function Header({ user }: HeaderProps) {
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push('/')}
-                className="hover:bg-slate-100 dark:hover:bg-slate-700"
-              >
-                <Home className="w-4 h-4 mr-2" />
-                Home
-              </Button>
 
               <Button
                 variant="outline"
@@ -66,6 +57,15 @@ export default function Header({ user }: HeaderProps) {
               >
                 <Trophy className="w-4 h-4 mr-2" />
                 Leaderboard
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push('/gallery')}
+                className="hover:bg-slate-100 dark:hover:bg-slate-700"
+              >
+                Gallery
               </Button>
 
               <Button
