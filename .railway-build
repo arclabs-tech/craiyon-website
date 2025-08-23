@@ -1,0 +1,4 @@
+# Railway Force Rebuild
+# This file forces Railway to do a fresh build
+BUILD_TIMESTAMP=2025-08-23-10:30:00
+FORCE_REBUILD=true

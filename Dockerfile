@@ -18,8 +18,12 @@ ENV PYTHON=/usr/bin/python3
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install ALL dependencies (including devDependencies for build)
-RUN npm install --verbose
+# Force clean install - no cache, install everything
+RUN npm ci --verbose --no-audit --include=dev
+
+# Verify critical dependencies are installed
+RUN npm list autoprefixer tailwindcss postcss || echo "Some deps missing, installing manually..."
+RUN npm install autoprefixer@^10.0.1 tailwindcss@^3.3.0 postcss@^8 --save-dev
 
 # Copy source code
 COPY . .
@@ -31,7 +35,7 @@ RUN mkdir -p /app/data && \
 # Build the application (this needs devDependencies)
 RUN npm run build
 
-# NOW set production and remove devDependencies
+# NOW set production and remove devDependencies to save space
 ENV NODE_ENV=production
 RUN npm prune --omit=dev
 
