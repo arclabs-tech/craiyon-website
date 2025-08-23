@@ -5,41 +5,39 @@ import axios from "axios";
 import { type ImageOpts } from "@/lib/schemas";
 
 type ResponseProps = {
-  job: string;
+  id: string;
   status: string;
+  result?: {
+    image_url: string;
+  };
 };
 
 async function generateImage(opts: ImageOpts) {
-  let url: string;
-  let width: number;
-  let height: number;
-  if (opts.model === "sd_xl_base_1.0.safetensors [be9edd61]") {
-    url = "https://api.prodia.com/v1/sdxl/generate";
-    width = 1024;
-    height = 1024;
-  } else if (opts.model === "v1-5-pruned-emaonly.safetensors [d7049739]") {
-    url = "https://api.prodia.com/v1/sd/generate";
-    width = 768;
-    height = 768;
-  } else {
-    throw new Error(`Invalid model: ${opts.model}`);
-  }
+  const NEBIUS_API_KEY = process.env.NEBIUS_API_KEY || opts.api_key;
+  
   const body = {
-    ...opts,
+    model: opts.model,
+    prompt: opts.prompt,
+    negative_prompt: opts.negative_prompt,
     steps: opts.steps[0],
     cfg_scale: opts.cfg_scale[0],
-    width: width,
-    height: height,
+    seed: opts.seed === -1 ? Math.floor(Math.random() * 1000000) : opts.seed,
+    width: opts.width,
+    height: opts.height,
+    sampler: opts.sampler,
   };
-  const apiKey = body.api_key;
-  delete body.api_key;
 
-  const { data, status } = await axios.post<ResponseProps>(url, body, {
-    headers: {
-      "X-Prodia-Key": apiKey,
-      "Content-Type": "application/json",
-    },
-  });
+  const { data, status } = await axios.post<ResponseProps>(
+    "https://api.studio.nebius.ai/v1/text-to-image/generate",
+    body,
+    {
+      headers: {
+        "Authorization": `Bearer ${NEBIUS_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  
   if (status !== 200)
     throw new Error(`Error ${status}: Failed to generate image`);
 
@@ -47,25 +45,31 @@ async function generateImage(opts: ImageOpts) {
 }
 
 type GetImageUrlResponseProps = {
-  job: string;
+  id: string;
   status: string;
-  imageUrl: string;
+  result?: {
+    image_url: string;
+  };
 };
 
 async function getImageUrl(jobId: string, apiKey: string): Promise<string> {
+  const NEBIUS_API_KEY = process.env.NEBIUS_API_KEY || apiKey;
+  
   const { data: job, status } = await axios.get<GetImageUrlResponseProps>(
-    `https://api.prodia.com/v1/job/${jobId}`,
+    `https://api.studio.nebius.ai/v1/text-to-image/status/${jobId}`,
     {
       headers: {
-        "X-Prodia-Key": apiKey,
+        "Authorization": `Bearer ${NEBIUS_API_KEY}`,
       },
     }
   );
   if (status !== 200)
     throw new Error(`Error ${status}: Failed to get image url`);
 
-  if (job.status === "succeeded") {
-    return job.imageUrl;
+  if (job.status === "completed" && job.result?.image_url) {
+    return job.result.image_url;
+  } else if (job.status === "failed") {
+    throw new Error("Image generation failed");
   } else {
     return new Promise((resolve, reject) => {
       setTimeout(() => {

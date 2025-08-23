@@ -289,10 +289,10 @@ function APIKey() {
             Get API key from{" "}
             <a
               className="text-blue underline"
-              href="https://prodia.com"
+              href="https://studio.nebius.ai"
               target="_blank"
             >
-              prodia.com
+              Nebius Studio
             </a>
           </FormDescription>
           <FormMessage />
