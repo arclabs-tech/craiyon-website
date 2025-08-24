@@ -105,8 +105,8 @@ async function generateImage({ opts, user }: GenerateImageParams) {
     }
 
   const imageUrl = data.data[0].url;
-  // Save to database
-  await saveGeneratedImage({ user, prompt, url: imageUrl });
+  // Save to database (include negative prompt if provided)
+  await saveGeneratedImage({ user, prompt, negative_prompt, url: imageUrl });
   return imageUrl;
   } catch (error: any) {
     if (error.response) {

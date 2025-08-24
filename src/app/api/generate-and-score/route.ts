@@ -10,11 +10,12 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const challengeIdRaw = body?.challengeId;
   const userPrompt: string | undefined = body?.userPrompt;
+  const negativePrompt: string | undefined = body?.negativePrompt;
     const challengeId = typeof challengeIdRaw === 'string' || typeof challengeIdRaw === 'number'
       ? Number(challengeIdRaw)
       : NaN;
 
-    if (!Number.isFinite(challengeId) || !userPrompt || !userPrompt.trim()) {
+  if (!Number.isFinite(challengeId) || !userPrompt || !userPrompt.trim()) {
       return NextResponse.json(
         { error: 'Challenge ID (number) and non-empty prompt are required' },
         { status: 400 }
@@ -54,8 +55,9 @@ export async function POST(request: NextRequest) {
     }
 
   const cleanedPrompt = userPrompt.trim();
+  const cleanedNegative = negativePrompt ? negativePrompt.trim() : '';
   // Generate image using the existing generateImage function
-  const generatedImageUrl = await generateImage({ opts: cleanedPrompt, user: user.username });
+  const generatedImageUrl = await generateImage({ opts: { prompt: cleanedPrompt, negative_prompt: cleanedNegative }, user: user.username } as any);
 
     if (!generatedImageUrl) {
       return NextResponse.json(
@@ -95,6 +97,7 @@ export async function POST(request: NextRequest) {
         generated_image_url: generatedImageUrl,
         user_prompt: cleanedPrompt,
         score: finalScore,
+        negative_prompt: cleanedNegative,
       })
       .returning(['id', 'score'])
       .executeTakeFirst();

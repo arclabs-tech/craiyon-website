@@ -28,6 +28,7 @@ export default function ChallengeGrid() {
   const [loading, setLoading] = useState(true);
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
   const [userPrompt, setUserPrompt] = useState('');
+  const [negativePrompt, setNegativePrompt] = useState('');
   const [generating, setGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [score, setScore] = useState<number | null>(null);
@@ -71,6 +72,7 @@ export default function ChallengeGrid() {
   const handleChallengeClick = (challenge: Challenge) => {
     setSelectedChallenge(challenge);
     setUserPrompt('');
+  setNegativePrompt('');
     setGeneratedImage(null);
     setScore(null);
     
@@ -136,6 +138,7 @@ export default function ChallengeGrid() {
         body: JSON.stringify({
           challengeId: selectedChallenge.id,
           userPrompt: userPrompt.trim(),
+          negativePrompt: negativePrompt.trim(),
         }),
       });
 
@@ -312,6 +315,18 @@ export default function ChallengeGrid() {
                 placeholder="Describe the image you want to generate..."
                 value={userPrompt}
                 onChange={(e) => setUserPrompt(e.target.value)}
+                disabled={generating}
+              />
+            </div>
+            <div>
+              <Label htmlFor="negativePrompt" className="text-sm font-medium">
+                Negative Prompt (optional)
+              </Label>
+              <Input
+                id="negativePrompt"
+                placeholder="What you don't want in the image..."
+                value={negativePrompt}
+                onChange={(e) => setNegativePrompt(e.target.value)}
                 disabled={generating}
               />
             </div>

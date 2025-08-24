@@ -32,6 +32,9 @@ export default async function GalleryPage() {
               <div className="p-4">
                 <div className="text-xs text-zinc-500 mb-1">By: {img.user}</div>
                 <div className="font-medium text-sm mb-1">{img.prompt}</div>
+                {img.negative_prompt && img.negative_prompt.trim() !== '' && (
+                  <div className="text-xs text-zinc-500 mt-1">Negative: {img.negative_prompt}</div>
+                )}
                 <div className="text-xs text-zinc-400">{new Date(img.created_at).toLocaleString()}</div>
               </div>
             </div>

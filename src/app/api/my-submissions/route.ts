@@ -19,6 +19,7 @@ export async function GET(_req: NextRequest) {
         's.challenge_id as challenge_id',
         's.generated_image_url as generated_image_url',
         's.user_prompt as user_prompt',
+        's.negative_prompt as negative_prompt',
         's.score as score',
         's.created_at as created_at',
         'c.image_url as original_image_url',

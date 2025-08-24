@@ -23,6 +23,7 @@ interface Database {
     challenge_id: number;
     generated_image_url: string;
     user_prompt: string;
+  negative_prompt?: string;
     score: number;
   created_at: Generated<string>;
   };
@@ -38,6 +39,7 @@ interface Database {
     id: Generated<number>;
     user: string;
     prompt: string;
+  negative_prompt?: string;
     url: string;
     created_at: Generated<string>;
   };
@@ -101,6 +103,7 @@ export async function initializeDatabase() {
       .addColumn('challenge_id', 'integer', (col) => col.notNull())
       .addColumn('generated_image_url', 'text', (col) => col.notNull())
       .addColumn('user_prompt', 'text', (col) => col.notNull())
+  .addColumn('negative_prompt', 'text', (col) => col.notNull().defaultTo(''))
       .addColumn('score', 'real', (col) => col.notNull())
   .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(sql`(CURRENT_TIMESTAMP)`))
       .execute();
@@ -124,6 +127,7 @@ export async function initializeDatabase() {
       .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
       .addColumn('user', 'text', (col) => col.notNull())
       .addColumn('prompt', 'text', (col) => col.notNull())
+  .addColumn('negative_prompt', 'text', (col) => col.notNull().defaultTo(''))
       .addColumn('url', 'text', (col) => col.notNull())
       .addColumn('created_at', 'text', (col) => col.notNull().defaultTo(sql`(CURRENT_TIMESTAMP)`))
       .execute();
@@ -144,8 +148,8 @@ export async function initializeDatabase() {
 } 
 
 // Insert a generated image record
-export async function saveGeneratedImage({ user, prompt, url }: { user: string; prompt: string; url: string }) {
+export async function saveGeneratedImage({ user, prompt, negative_prompt, url }: { user: string; prompt: string; negative_prompt?: string; url: string }) {
   await db.insertInto('generated_images')
-    .values({ user, prompt, url })
+    .values({ user, prompt, negative_prompt: negative_prompt || '', url })
     .execute();
 }
