@@ -108,7 +108,7 @@ function initializeDatabase() {
   }
 }
 
-// Create users from SEAT 1 to 200
+// Create users: 3 variants per seat (SEAT001_1..SEAT200_3) with matching passwords
 function createUsers() {
   try {
     // Check if users already exist
@@ -123,18 +123,17 @@ function createUsers() {
       VALUES (?, ?, ?)
     `);
 
-    // Create 3 groups of users: suffixes _1, _2, _3
-    // Username pattern: SEAT{NNN}_{group} where NNN = 001..200
-    // Password pattern: S{group}_{index} e.g. S1_1 for SEAT001_1
-    for (let group = 1; group <= 3; group++) {
-      for (let i = 1; i <= 200; i++) {
-        const username = `SEAT${i.toString().padStart(3, '0')}_${group}`;
-        const password = `S${group}_${i}`;
+    const groups = [1, 2, 3];
+    for (let i = 1; i <= 200; i++) {
+      const pad = i.toString().padStart(3, '0');
+      groups.forEach(g => {
+        const username = `SEAT${pad}_${g}`;
+        const password = `S${pad}_${g}`;
         insertUser.run(username, password, 0);
-      }
+      });
     }
-    
-    console.log('Users created successfully');
+
+    console.log('Users created successfully (3 variants per seat)');
   } catch (error) {
     console.log('Error creating users:', error);
   }
