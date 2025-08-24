@@ -128,25 +128,7 @@ async function getEmbeddingWithRetry(base64Data: string, name: string, maxRetrie
   throw new Error(`Exhausted all retry attempts for ${name}`);
 }
 
-// More realistic scoring that doesn't inflate similarity
-function mapSimilarityToScore(cosineSim: number): number {
-  // Cosine similarity for images typically ranges from 0.1 to 0.95
-  // We'll map this more honestly to avoid inflated scores
-  
-  // Clamp to reasonable range for image similarity
-  const clampedSim = Math.max(0, Math.min(1, cosineSim));
-  
-  if (clampedSim < 0.3) {
-    // Very poor similarity -> low score
-    return 0.50 + (clampedSim / 0.3) * 0.15; // 0.50-0.65
-  } else if (clampedSim < 0.6) {
-    // Moderate similarity -> medium score
-    return 0.65 + ((clampedSim - 0.3) / 0.3) * 0.20; // 0.65-0.85
-  } else {
-    // Good similarity -> high score
-    return 0.85 + ((clampedSim - 0.6) / 0.4) * 0.15; // 0.85-1.00
-  }
-}
+// mapSimilarityToScore removed — scoring uses raw image-image cosine similarity only.
 
 export async function compareImages(originalImageUrl: string, generatedImageUrl: string): Promise<number> {
   const startTime = Date.now();
@@ -194,78 +176,24 @@ export async function compareImages(originalImageUrl: string, generatedImageUrl:
     const cosSim = cosineSimilarity(origEmb, genEmb);
     console.log(`🎯 Raw cosine similarity: ${cosSim.toFixed(4)}`);
 
-    // Return raw cosine similarity (no mapping/inflation)
-    const finalScore = Math.max(0, cosSim); // Only ensure non-negative
-    const roundedScore = Math.round(finalScore * 100) / 100;
-    
-    const elapsed = Date.now() - startTime;
-    console.log(`✅ Raw similarity score: ${roundedScore} (${elapsed}ms)`);
-    
-    return roundedScore;
+  // Return raw cosine similarity clamped to [0,1]
+  const finalScore = Math.max(0, Math.min(1, cosSim));
+  const roundedScore = Math.round(finalScore * 100) / 100;
+
+  const elapsed = Date.now() - startTime;
+  console.log(`✅ Raw similarity score: ${roundedScore} (${elapsed}ms)`);
+
+  return roundedScore;
     
   } catch (error) {
     const elapsed = Date.now() - startTime;
     console.error(`❌ Image comparison failed after ${elapsed}ms:`, error);
     
-    // Conservative fallback - return low similarity on error
-    const fallbackScore = 0.15 + Math.random() * 0.10; // 0.15-0.25 range
-    const roundedFallback = Math.round(fallbackScore * 100) / 100;
-    
-    console.log(`🔄 Using conservative fallback score: ${roundedFallback}`);
-    return roundedFallback;
+  // On error, return 0 (no optimistic/text fallback)
+  console.log('🔄 Image comparison failed — returning 0 (no fallback)');
+  return 0;
   }
 }
 
 // Improved prompt-based scoring with semantic understanding
-export function calculateScoreBasedOnPrompt(originalPrompt: string, userPrompt: string): number {
-  const orig = originalPrompt.toLowerCase().trim();
-  const user = userPrompt.toLowerCase().trim();
-  
-  // Direct match gets high score
-  if (orig === user) return 0.95;
-  
-  // Tokenize and clean
-  const origWords = orig.split(/\W+/).filter(w => w.length > 2);
-  const userWords = user.split(/\W+/).filter(w => w.length > 2);
-  
-  if (origWords.length === 0 && userWords.length === 0) return 0.80;
-  if (origWords.length === 0 || userWords.length === 0) return 0.50;
-  
-  // Calculate overlap metrics
-  const commonWords = origWords.filter(word => userWords.includes(word));
-  const jaccard = commonWords.length / (origWords.length + userWords.length - commonWords.length);
-  const wordOverlap = commonWords.length / Math.max(origWords.length, userWords.length);
-  
-  // Character-level similarity (for partial word matches)
-  const charSimilarity = calculateLevenshteinSimilarity(orig, user);
-  
-  // Weighted combination
-  const combined = (jaccard * 0.4) + (wordOverlap * 0.4) + (charSimilarity * 0.2);
-  
-  // Map to score range [0.5, 1.0] with honest distribution
-  const score = 0.5 + (combined * 0.5);
-  
-  return Math.round(score * 100) / 100;
-}
-
-// Helper function for character-level similarity
-function calculateLevenshteinSimilarity(a: string, b: string): number {
-  const matrix = Array(b.length + 1).fill(0).map(() => Array(a.length + 1).fill(0));
-  
-  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
-  for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
-  
-  for (let j = 1; j <= b.length; j++) {
-    for (let i = 1; i <= a.length; i++) {
-      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      matrix[j][i] = Math.min(
-        matrix[j - 1][i] + 1,      // deletion
-        matrix[j][i - 1] + 1,      // insertion
-        matrix[j - 1][i - 1] + cost // substitution
-      );
-    }
-  }
-  
-  const maxLen = Math.max(a.length, b.length);
-  return maxLen === 0 ? 1 : 1 - (matrix[b.length][a.length] / maxLen);
-} 
+// Prompt-based scoring helper removed — scoring is image-only now.

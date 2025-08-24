@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/database';
 import { generateImage } from '@/actions/generateImage';
-import { compareImages, calculateScoreBasedOnPrompt } from '@/lib/image-comparison';
+import { compareImages } from '@/lib/image-comparison';
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,16 +64,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate score using both methods
-    const imageScore = await compareImages(challenge.image_url, generatedImageUrl);
-    const promptScore = calculateScoreBasedOnPrompt(challenge.prompt, cleanedPrompt);
-    
-    console.log(`🎯 Scoring breakdown: image=${imageScore}, prompt=${promptScore}`);
-    
-    // Use the higher score
-    const finalScore = Math.max(imageScore, promptScore);
-    
-    console.log(`📊 Final score: ${finalScore} (max of image and prompt)`);
+  // Calculate score using image embeddings only (cosine similarity)
+  const imageScore = await compareImages(challenge.image_url, generatedImageUrl);
+  console.log(`🎯 Image-only scoring: image=${imageScore}`);
+
+  const finalScore = imageScore;
+  console.log(`📊 Final score (image-only): ${finalScore}`);
 
     // Get user's CURRENT best score for this challenge BEFORE saving new submission
     const previousBest = await db
