@@ -27,11 +27,11 @@ export default async function GalleryPage() {
           {images.map(img => (
             <div key={img.id} className="border rounded-lg overflow-hidden shadow bg-white dark:bg-zinc-900">
               <div className="relative aspect-square w-full h-64 bg-zinc-100 dark:bg-zinc-800">
-                <Image src={img.url} alt={img.prompt} fill className="object-contain" />
+                <Image src={img.url} alt="Generated image" fill className="object-contain" />
               </div>
               <div className="p-4">
                 <div className="text-xs text-zinc-500 mb-1">By: {img.user}</div>
-                <div className="font-medium text-sm mb-1">{img.prompt}</div>
+                {/* Prompt hidden in gallery */}
                 <div className="text-xs text-zinc-400">{new Date(img.created_at).toLocaleString()}</div>
               </div>
             </div>
