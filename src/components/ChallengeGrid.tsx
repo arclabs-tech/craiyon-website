@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +23,11 @@ interface SubmissionCount {
   canSubmit: boolean;
 }
 
-export default function ChallengeGrid() {
+interface ChallengeGridProps {
+  onTotalScoreUpdate?: (total: number) => void;
+}
+
+export default function ChallengeGrid({ onTotalScoreUpdate }: ChallengeGridProps) {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [submissionCounts, setSubmissionCounts] = useState<SubmissionCount[]>([]);
   const [loading, setLoading] = useState(true);
@@ -164,6 +169,9 @@ export default function ChallengeGrid() {
         setScore(data.submission.score);
         setAttemptsUsed(data.attemptsUsed);
         setAttemptsRemaining(data.attemptsRemaining);
+        if (typeof data.totalScore === 'number' && onTotalScoreUpdate) {
+          onTotalScoreUpdate(data.totalScore);
+        }
         
         // Update local submission counts (create or update entry)
         setSubmissionCounts(prev => {
@@ -223,10 +231,12 @@ export default function ChallengeGrid() {
           >
             <CardContent className="p-4">
               <div className="aspect-square relative overflow-hidden rounded-lg mb-4">
-                <img
+                <Image
                   src={challenge.image_url}
                   alt={`Challenge ${challenge.id}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 300px"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
                   <div className="text-white opacity-0 hover:opacity-100 transition-opacity duration-200 text-center">
@@ -279,11 +289,15 @@ export default function ChallengeGrid() {
             <div>
               <Label className="text-sm font-medium mb-2 block">Original Image</Label>
               <div className="aspect-square relative overflow-hidden rounded-lg border">
-                <img
-                  src={selectedChallenge?.image_url}
-                  alt="Original"
-                  className="w-full h-full object-cover"
-                />
+                {selectedChallenge && (
+                  <Image
+                    src={selectedChallenge.image_url}
+                    alt="Original"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                )}
               </div>
             </div>
 
@@ -297,10 +311,12 @@ export default function ChallengeGrid() {
                     <p className="text-sm text-gray-600">Generating...</p>
                   </div>
                 ) : generatedImage ? (
-                  <img
+                  <Image
                     src={generatedImage}
                     alt="Generated"
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 ) : (
                   <div className="text-center text-slate-500 dark:text-slate-400">

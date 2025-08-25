@@ -138,6 +138,13 @@ export async function POST(request: NextRequest) {
     const newAttemptsUsed = attemptsUsed + 1;
     const newAttemptsRemaining = 6 - newAttemptsUsed;
 
+    // Fetch updated total score (may have changed if new personal best)
+    const updatedUser = await db
+      .selectFrom('users')
+      .select(['total_score'])
+      .where('id', '=', user.id)
+      .executeTakeFirst();
+
     return NextResponse.json({
       success: true,
       submission: {
@@ -147,7 +154,8 @@ export async function POST(request: NextRequest) {
       },
       attemptsUsed: newAttemptsUsed,
       attemptsRemaining: newAttemptsRemaining,
-      canSubmit: newAttemptsRemaining > 0
+      canSubmit: newAttemptsRemaining > 0,
+      totalScore: updatedUser?.total_score ?? user.total_score,
     });
   } catch (error) {
     console.error('Generate and score error:', error);

@@ -1,6 +1,7 @@
 'use client';
 
 import { User } from '@/lib/auth';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { LogOut, Trophy, Home, Image as ImageIcon } from 'lucide-react';
@@ -43,7 +44,7 @@ export default function Header({ user }: HeaderProps) {
                 className="focus:outline-none"
                 aria-label="Go to home"
               >
-                <img src="/craiyon-logo.svg" alt="Craiyon Logo" className="w-48 drop-shadow-lg" />
+                <Image src="/craiyon-logo.svg" alt="Craiyon Logo" width={192} height={48} className="w-48 h-auto drop-shadow-lg" priority />
               </button>
             </h1>
           </div>
@@ -87,9 +88,9 @@ export default function Header({ user }: HeaderProps) {
               </Button>
 
               <div className="flex flex-row items-center justify-center gap-8 mr-2 ml-16">
-                <img src="/logo_light.png" alt="Arclabs Logo" className="h-8 drop-shadow" />
-                <img src="/aiml-logo.svg" alt="AIML Logo" className="h-8 drop-shadow" />
-                <img src="/aura-logo.svg" alt="Aura Logo" className="h-8 drop-shadow" />
+                <Image src="/logo_light.png" alt="Arclabs Logo" width={64} height={32} className="h-8 w-auto drop-shadow" />
+                <Image src="/aiml-logo.svg" alt="AIML Logo" width={64} height={32} className="h-8 w-auto drop-shadow" />
+                <Image src="/aura-logo.svg" alt="Aura Logo" width={64} height={32} className="h-8 w-auto drop-shadow" />
               </div>
             </div>
           </div>
