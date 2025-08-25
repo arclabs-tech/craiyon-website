@@ -126,6 +126,24 @@ export default function ChallengeGrid() {
       return;
     }
 
+    // Check for NSFW content in the prompt
+    const nsfwBlacklist = [
+      'nude', 'naked', 'porn', 'pornographic', 'sexual', 'nsfw', 'xxx',
+      'explicit', 'adult', 'sex', 'erotic', 'obscene', 'genitalia',
+      'offensive', 'inappropriate', 'vulgar', 'lewd', 'fuck', 'pussy', 'penis', 'bikini', 'undies', 'underwear', 'undergarments', 'dick', 'vagina', 'pussy', 'hentai', 'ecchi', 'horny'
+    ];
+
+    const lowerPrompt = userPrompt.toLowerCase();
+    const containsBlacklistedWord = nsfwBlacklist.some(word => 
+      lowerPrompt.includes(word) || 
+      lowerPrompt.split(/\s+/).includes(word)
+    );
+
+    if (containsBlacklistedWord) {
+      toast.error('Your prompt contains inappropriate content. Please try again.');
+      return;
+    }
+
     setGenerating(true);
     try {
       const response = await fetch('/api/generate-and-score', {
