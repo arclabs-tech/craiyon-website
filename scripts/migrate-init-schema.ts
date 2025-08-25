@@ -63,11 +63,30 @@ export async function up() {
     .addColumn('created_at', 'timestamp', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .execute();
 
+  // Create image_votes table
+  await db.schema
+    .createTable('image_votes')
+    .ifNotExists()
+    .addColumn('id', 'serial', (col) => col.primaryKey())
+    .addColumn('image_id', 'integer', (col) => col.notNull().references('generated_images.id'))
+    .addColumn('user_id', 'integer', (col) => col.notNull().references('users.id'))
+    .addColumn('created_at', 'timestamp', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
+    .execute();
+
   // Ensure uniqueness on (user_id, challenge_id) in submission_counts
   await db.schema
     .createIndex('uniq_submission_counts_user_challenge')
     .on('submission_counts')
     .columns(['user_id', 'challenge_id'])
+    .unique()
+    .ifNotExists()
+    .execute();
+
+  // Ensure uniqueness on (image_id, user_id) for image_votes
+  await db.schema
+    .createIndex('uniq_image_votes_image_user')
+    .on('image_votes')
+    .columns(['image_id', 'user_id'])
     .unique()
     .ifNotExists()
     .execute();
@@ -122,6 +141,8 @@ async function createChallenges() {
 export async function down() {
   // Drop tables in reverse order to handle dependencies
   await db.schema.dropIndex('uniq_submission_counts_user_challenge').ifExists().execute();
+  await db.schema.dropIndex('uniq_image_votes_image_user').ifExists().execute();
+  await db.schema.dropTable('image_votes').ifExists().execute();
   await db.schema.dropTable('generated_images').ifExists().execute();
   await db.schema.dropTable('submission_counts').ifExists().execute();
   await db.schema.dropTable('submissions').ifExists().execute();

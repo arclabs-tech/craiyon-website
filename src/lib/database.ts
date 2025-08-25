@@ -40,6 +40,12 @@ interface Database {
     url: string;
     created_at: Generated<string>;
   };
+  image_votes: {
+    id: Generated<number>;
+    image_id: number; // references generated_images.id
+    user_id: number; // references users.id
+    created_at: Generated<string>;
+  };
   pg_tables: {
     schemaname: string;
     tablename: string;
@@ -121,6 +127,25 @@ export async function initializeDatabase() {
       .addColumn('prompt', 'text', (col) => col.notNull())
       .addColumn('url', 'text', (col) => col.notNull())
       .addColumn('created_at', 'timestamp', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
+      .execute();
+
+    // Create image_votes table (simple upvote system with toggle per user per image)
+    await db.schema
+      .createTable('image_votes')
+      .ifNotExists()
+      .addColumn('id', 'serial', (col) => col.primaryKey())
+      .addColumn('image_id', 'integer', (col) => col.notNull().references('generated_images.id'))
+      .addColumn('user_id', 'integer', (col) => col.notNull().references('users.id'))
+      .addColumn('created_at', 'timestamp', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
+      .execute();
+
+    // Uniqueness constraint so a user can only vote once per image
+    await db.schema
+      .createIndex('uniq_image_votes_image_user')
+      .on('image_votes')
+      .columns(['image_id', 'user_id'])
+      .unique()
+      .ifNotExists()
       .execute();
 
     // Ensure uniqueness on (user_id, challenge_id) to prevent duplicate rows
