@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         .updateTable('submission_counts')
         .set((eb) => ({
           attempts_used: eb('attempts_used', '+', 1),
-          updated_at: eb.val('datetime(\'now\')'),
+          updated_at: new Date().toISOString(),
         }))
         .where('user_id', '=', user.id)
         .where('challenge_id', '=', challengeId)
