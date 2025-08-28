@@ -29,7 +29,7 @@ async function generateImage({ opts, user }: GenerateImageParams) {
   let model: string;
   let width: number;
   let height: number;
-  let negative_prompt: string = "";
+  let negative_prompt: string = "nsfw,nudity,breasts,erotic,sex,porn,penis,vagina";
   let steps: number = 8;
   let guidance_scale: number = 7;
   let seed: number = -1;
@@ -46,7 +46,7 @@ async function generateImage({ opts, user }: GenerateImageParams) {
     model = opts.model;
     width = opts.width;
     height = opts.height;
-    negative_prompt = opts.negative_prompt || "";
+    // negative_prompt = opts.negative_prompt || "nsfw,nudity,breasts,erotic,sex,porn,penis,vagina,";
     steps = opts.steps?.[0] || 8;
     guidance_scale = opts.guidance_scale?.[0] || 7;
     seed = opts.seed || -1;
