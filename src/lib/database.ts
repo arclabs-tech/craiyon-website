@@ -165,7 +165,10 @@ export async function initializeDatabase() {
 
 // Insert a generated image record
 export async function saveGeneratedImage({ user, prompt, url }: { user: string; prompt: string; url: string }) {
-  await db.insertInto('generated_images')
+  const [id] = await db.insertInto('generated_images')
     .values({ user, prompt, url })
+    .returning('id')
     .execute();
+
+  return id;
 }

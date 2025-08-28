@@ -184,7 +184,7 @@ export async function down() {
 }
 
 // To run: import and call up() for migration, down() for rollback.
-{
+if (require.main === module) {
   up()
     .then(() => {
       console.log("Migration completed");

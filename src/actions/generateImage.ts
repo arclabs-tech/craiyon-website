@@ -6,7 +6,6 @@ import { type ImageOpts } from "@/lib/schemas";
 import { GetApiKey } from "@/lib/api-keys";
 import { saveGeneratedImage } from "@/lib/database";
 
-
 type ImageGenerationResponse = {
   data: Array<{
     url?: string;
@@ -29,12 +28,13 @@ async function generateImage({ opts, user }: GenerateImageParams) {
   let model: string;
   let width: number;
   let height: number;
-  let negative_prompt: string = "nsfw,nudity,breasts,erotic,sex,porn,penis,vagina";
+  let negative_prompt: string =
+    "nsfw,nudity,breasts,erotic,sex,porn,penis,vagina";
   let steps: number = 8;
   let guidance_scale: number = 7;
   let seed: number = -1;
 
-  if (typeof opts === 'string') {
+  if (typeof opts === "string") {
     // Simple string prompt - use defaults
     prompt = opts;
     model = "black-forest-labs/flux-schnell";
@@ -65,15 +65,15 @@ async function generateImage({ opts, user }: GenerateImageParams) {
   if (negative_prompt && negative_prompt.trim() !== "") {
     body.negative_prompt = negative_prompt;
   }
-  
+
   if (steps > 0) {
     body.num_inference_steps = steps;
   }
-  
+
   if (guidance_scale > 0) {
     body.guidance_scale = guidance_scale;
   }
-  
+
   if (seed > -1) {
     body.seed = seed;
   }
@@ -83,20 +83,24 @@ async function generateImage({ opts, user }: GenerateImageParams) {
     url,
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${apiKey.substring(0, 20)}...`, // Truncated for security
+      Authorization: `Bearer ${apiKey.substring(0, 20)}...`, // Truncated for security
       "Content-Type": "application/json",
     },
-    body
+    body,
   });
 
   try {
-    const { data, status } = await axios.post<ImageGenerationResponse>(url, body, {
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-    });
-    
+    const { data, status } = await axios.post<ImageGenerationResponse>(
+      url,
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
     if (status !== 200)
       throw new Error(`Error ${status}: Failed to generate image`);
 
@@ -104,19 +108,23 @@ async function generateImage({ opts, user }: GenerateImageParams) {
       throw new Error("No image generated");
     }
 
-  const imageUrl = data.data[0].url;
-  // Save to database
-  await saveGeneratedImage({ user, prompt, url: imageUrl });
-  return imageUrl;
+    const imageUrl = data.data[0].url;
+    // Save to database
+    const { id } = await saveGeneratedImage({ user, prompt, url: imageUrl });
+    return { imageUrl, id };
   } catch (error: any) {
     if (error.response) {
       // Log the full error response for debugging
       console.error("Nebius API Error:", {
         status: error.response.status,
         data: error.response.data,
-        headers: error.response.headers
+        headers: error.response.headers,
       });
-      throw new Error(`API Error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+      throw new Error(
+        `API Error ${error.response.status}: ${JSON.stringify(
+          error.response.data
+        )}`
+      );
     }
     throw error;
   }
