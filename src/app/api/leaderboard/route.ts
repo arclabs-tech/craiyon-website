@@ -1,15 +1,15 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/database';
+import { NextResponse } from "next/server";
+import { db } from "@/lib/database";
 
 // Ensure this endpoint is never statically cached
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
     const leaderboard = await db
-      .selectFrom('users')
-      .select(['id', 'username', 'total_score'])
-      .orderBy('total_score', 'desc')
+      .selectFrom("users")
+      .select(["id", "username", "total_score"])
+      .orderBy("total_score", "desc")
       .limit(50)
       .execute();
 
@@ -20,15 +20,15 @@ export async function GET() {
       },
       {
         headers: {
-          'Cache-Control': 'no-store',
+          "Cache-Control": "no-store",
         },
-      }
+      },
     );
   } catch (error) {
-    console.error('Leaderboard error:', error);
+    console.error("Leaderboard error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
-} 
+}

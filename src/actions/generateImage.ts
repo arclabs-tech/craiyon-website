@@ -98,7 +98,7 @@ async function generateImage({ opts, user }: GenerateImageParams) {
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (status !== 200)
@@ -122,8 +122,8 @@ async function generateImage({ opts, user }: GenerateImageParams) {
       });
       throw new Error(
         `API Error ${error.response.status}: ${JSON.stringify(
-          error.response.data
-        )}`
+          error.response.data,
+        )}`,
       );
     }
     throw error;
@@ -152,7 +152,7 @@ async function getEmbedding(imageData: string): Promise<Float32Array> {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
   if (status !== 200)
     throw new Error(`Error ${status}: Failed to get image embedding`);

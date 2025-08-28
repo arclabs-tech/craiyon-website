@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/database';
+import { NextResponse } from "next/server";
+import { db } from "@/lib/database";
 
 export async function GET() {
   try {
     const challenges = await db
-      .selectFrom('challenges')
-      .select(['id', 'image_url', 'prompt'])
-      .orderBy('id', 'asc')
+      .selectFrom("challenges")
+      .select(["id", "image_url", "prompt"])
+      .orderBy("id", "asc")
       .execute();
 
     return NextResponse.json({
@@ -14,10 +14,10 @@ export async function GET() {
       challenges,
     });
   } catch (error) {
-    console.error('Challenges error:', error);
+    console.error("Challenges error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
-} 
+}

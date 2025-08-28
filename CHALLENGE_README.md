@@ -56,16 +56,19 @@ The system automatically creates 200 user accounts:
 ## How It Works
 
 ### 1. Challenge Selection
+
 - Students see 6 pre-generated images on the homepage
 - Each image represents a different challenge
 - Images are displayed in a 3x2 grid layout
 
 ### 2. Image Generation
+
 - Students click on any challenge image
 - They enter a prompt describing what they want to generate
 - The system uses Nebius AI to generate an image based on their prompt
 
 ### 3. Scoring System
+
 - The system compares the generated image with the original
 - Uses a combination of:
   - Image similarity (random score between 0.5-1.0 for demo)
@@ -74,6 +77,7 @@ The system automatically creates 200 user accounts:
 - Scores range from 0.5 to 1.0
 
 ### 4. Leaderboard
+
 - Students can only submit once per challenge
 - Total score is the sum of all 6 challenge scores
 - Leaderboard shows top 50 performers
@@ -82,21 +86,24 @@ The system automatically creates 200 user accounts:
 ## Challenge Images
 
 The 6 challenge images are:
+
 1. Happy Dog
 2. Astro Horse
 3. Hot Soup
-4. The Throne 
+4. The Throne
 5. Vibing Girl
 6. Red Aura
 
 ## Technical Details
 
 ### Database Schema
+
 - **users**: User accounts and total scores
 - **challenges**: The 6 challenge images and their prompts
 - **submissions**: Student submissions with scores
 
 ### API Endpoints
+
 - `/api/auth/login` - User authentication
 - `/api/auth/logout` - User logout
 - `/api/challenges` - Get all challenges
@@ -105,7 +112,9 @@ The 6 challenge images are:
 - `/api/init` - Initialize database
 
 ### Scoring Algorithm
+
 Currently uses a simplified scoring system:
+
 - Random score between 0.5-1.0 for image similarity
 - Keyword matching for prompt similarity
 - Can be enhanced with proper image embedding comparison
@@ -136,4 +145,4 @@ Currently uses a simplified scoring system:
 
 ### Support
 
-For technical support, check the logs in your terminal and browser console for error messages. 
+For technical support, check the logs in your terminal and browser console for error messages.

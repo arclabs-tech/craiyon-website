@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     if (typeof query !== "string" || !query.trim()) {
       return NextResponse.json(
         { error: "No SQL query provided." },
-        { status: 400 }
+        { status: 400 },
       );
     }
     // WARNING: This endpoint is extremely dangerous. Restrict access in production!
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "SQL error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

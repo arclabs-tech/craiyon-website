@@ -6,7 +6,13 @@ import GalleryVoteButton from "@/components/GalleryVoteButton";
 
 const PAGE_SIZE = 12;
 
-export default function GalleryInfiniteScroll({ user, votedIds: initialVotedIds }: { user: any, votedIds: Set<number> }) {
+export default function GalleryInfiniteScroll({
+  user,
+  votedIds: initialVotedIds,
+}: {
+  user: any;
+  votedIds: Set<number>;
+}) {
   const [images, setImages] = useState<any[]>([]);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -38,7 +44,7 @@ export default function GalleryInfiniteScroll({ user, votedIds: initialVotedIds 
           fetchImages();
         }
       },
-      { threshold: 1 }
+      { threshold: 1 },
     );
     observer.observe(loader.current);
     return () => observer.disconnect();

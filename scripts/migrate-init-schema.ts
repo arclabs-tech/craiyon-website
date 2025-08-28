@@ -15,7 +15,7 @@ export async function up() {
     .addColumn("password", "text", (col) => col.notNull())
     .addColumn("total_score", "real", (col) => col.notNull().defaultTo(0))
     .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
     )
     .execute();
 
@@ -27,7 +27,7 @@ export async function up() {
     .addColumn("image_url", "text", (col) => col.notNull())
     .addColumn("prompt", "text", (col) => col.notNull())
     .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
     )
     .execute();
 
@@ -37,16 +37,16 @@ export async function up() {
     .ifNotExists()
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("user_id", "integer", (col) =>
-      col.notNull().references("users.id")
+      col.notNull().references("users.id"),
     )
     .addColumn("challenge_id", "integer", (col) =>
-      col.notNull().references("challenges.id")
+      col.notNull().references("challenges.id"),
     )
     .addColumn("generated_image_url", "text", (col) => col.notNull())
     .addColumn("user_prompt", "text", (col) => col.notNull())
     .addColumn("score", "real", (col) => col.notNull())
     .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
     )
     .execute();
 
@@ -56,17 +56,17 @@ export async function up() {
     .ifNotExists()
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("user_id", "integer", (col) =>
-      col.notNull().references("users.id")
+      col.notNull().references("users.id"),
     )
     .addColumn("challenge_id", "integer", (col) =>
-      col.notNull().references("challenges.id")
+      col.notNull().references("challenges.id"),
     )
     .addColumn("attempts_used", "integer", (col) => col.notNull().defaultTo(0))
     .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
     )
     .addColumn("updated_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
     )
     .execute();
 
@@ -79,7 +79,7 @@ export async function up() {
     .addColumn("prompt", "text", (col) => col.notNull())
     .addColumn("url", "text", (col) => col.notNull())
     .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
     )
     .execute();
 
@@ -89,13 +89,13 @@ export async function up() {
     .ifNotExists()
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("image_id", "integer", (col) =>
-      col.notNull().references("generated_images.id")
+      col.notNull().references("generated_images.id"),
     )
     .addColumn("user_id", "integer", (col) =>
-      col.notNull().references("users.id")
+      col.notNull().references("users.id"),
     )
     .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
     )
     .execute();
 

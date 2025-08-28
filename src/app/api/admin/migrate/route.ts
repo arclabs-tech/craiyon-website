@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Migration failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

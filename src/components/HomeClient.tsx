@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from 'react';
-import ChallengeGrid from '@/components/ChallengeGrid';
-import Header from '@/components/Header';
-import type { User } from '@/lib/auth';
+import { useState } from "react";
+import ChallengeGrid from "@/components/ChallengeGrid";
+import Header from "@/components/Header";
+import type { User } from "@/lib/auth";
 
 interface HomeClientProps {
   user: User;
@@ -21,10 +21,17 @@ export default function HomeClient({ user }: HomeClientProps) {
             Image Generation Challenge
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-300">
-            Welcome, <span className="font-semibold text-slate-800 dark:text-slate-200">{user.username}</span>! Click on any image below to start generating.
+            Welcome,{" "}
+            <span className="font-semibold text-slate-800 dark:text-slate-200">
+              {user.username}
+            </span>
+            ! Click on any image below to start generating.
           </p>
           <p className="text-lg text-slate-500 dark:text-slate-400 mt-2">
-            Your total score: <span className="font-bold text-blue-600 dark:text-blue-400">{totalScore.toFixed(2)}</span>
+            Your total score:{" "}
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {totalScore.toFixed(2)}
+            </span>
           </p>
         </div>
         <ChallengeGrid onTotalScoreUpdate={setTotalScore} />

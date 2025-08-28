@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { loginUser } from '@/lib/auth';
-import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from "next/server";
+import { loginUser } from "@/lib/auth";
+import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,8 +8,8 @@ export async function POST(request: NextRequest) {
 
     if (!username || !password) {
       return NextResponse.json(
-        { error: 'Username and password are required' },
-        { status: 400 }
+        { error: "Username and password are required" },
+        { status: 400 },
       );
     }
 
@@ -17,17 +17,17 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid username or password' },
-        { status: 401 }
+        { error: "Invalid username or password" },
+        { status: 401 },
       );
     }
 
     // Set cookie
     const cookieStore = cookies();
-    cookieStore.set('user_id', user.id.toString(), {
+    cookieStore.set("user_id", user.id.toString(), {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
@@ -40,10 +40,10 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
-} 
+}

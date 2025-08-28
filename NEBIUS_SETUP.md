@@ -12,10 +12,11 @@ This project has been migrated from Prodia to Nebius AI Studio for image generat
 2. **Update API Keys**:
    - Edit `src/lib/api-keys.ts`
    - Replace the placeholder API keys with your actual Nebius API keys:
+
    ```typescript
    const apiKeys: string[] = [
      "your-actual-nebius-api-key-1",
-     "your-actual-nebius-api-key-2", 
+     "your-actual-nebius-api-key-2",
      "your-actual-nebius-api-key-3",
    ];
    ```
@@ -30,12 +31,14 @@ This project has been migrated from Prodia to Nebius AI Studio for image generat
 ## API Changes
 
 ### Nebius vs Prodia Differences:
+
 - **Authentication**: Uses Bearer tokens instead of X-Prodia-Key
 - **Endpoint**: `/v1/images/generations` instead of separate SDXL/SD endpoints
 - **Response**: Direct image URL response instead of job-based polling
 - **Parameters**: Uses `num_inference_steps` instead of `steps`, `guidance_scale` instead of `cfg_scale`
 
 ### Benefits:
+
 - ✅ No job polling required (faster response)
 - ✅ Direct image URL response
 - ✅ Better model selection
@@ -55,6 +58,7 @@ const apiKeys: string[] = [
 ```
 
 Then set in your `.env.local`:
+
 ```
 NEBIUS_API_KEY_1=your-key-1
 NEBIUS_API_KEY_2=your-key-2
@@ -64,6 +68,7 @@ NEBIUS_API_KEY_3=your-key-3
 ## Testing
 
 After setting up your API keys, test the integration by:
+
 1. Running the development server: `npm run dev`
 2. Navigating to the image generation page
 3. Entering a prompt and generating an image

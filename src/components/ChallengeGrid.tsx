@@ -38,11 +38,11 @@ export default function ChallengeGrid({
 }: ChallengeGridProps) {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [submissionCounts, setSubmissionCounts] = useState<SubmissionCount[]>(
-    []
+    [],
   );
   const [loading, setLoading] = useState(true);
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(
-    null
+    null,
   );
   const [userPrompt, setUserPrompt] = useState("");
   const [generating, setGenerating] = useState(false);
@@ -99,7 +99,7 @@ export default function ChallengeGrid({
     // Prevent switching challenges if there's a generated image pending a vote or skip
     if (needsVote) {
       toast.error(
-        "Please vote on or skip your generated image before switching challenges"
+        "Please vote on or skip your generated image before switching challenges",
       );
       return;
     }
@@ -124,7 +124,7 @@ export default function ChallengeGrid({
       if (!selectedChallenge) return;
       try {
         const res = await fetch(
-          `/api/submission-counts?challengeId=${selectedChallenge.id}`
+          `/api/submission-counts?challengeId=${selectedChallenge.id}`,
         );
         const data = await res.json();
         if (data.success) {
@@ -132,7 +132,7 @@ export default function ChallengeGrid({
           setAttemptsRemaining(data.attemptsRemaining ?? 6);
           setSubmissionCounts((prev) => {
             const idx = prev.findIndex(
-              (c) => c.challengeId === selectedChallenge.id
+              (c) => c.challengeId === selectedChallenge.id,
             );
             if (idx === -1) {
               return [
@@ -205,12 +205,12 @@ export default function ChallengeGrid({
     const lowerPrompt = userPrompt.toLowerCase();
     const containsBlacklistedWord = nsfwBlacklist.some(
       (word) =>
-        lowerPrompt.includes(word) || lowerPrompt.split(/\s+/).includes(word)
+        lowerPrompt.includes(word) || lowerPrompt.split(/\s+/).includes(word),
     );
 
     if (containsBlacklistedWord) {
       toast.error(
-        "Your prompt contains inappropriate content. Please try again."
+        "Your prompt contains inappropriate content. Please try again.",
       );
       return;
     }
@@ -246,7 +246,7 @@ export default function ChallengeGrid({
         // Update local submission counts (create or update entry)
         setSubmissionCounts((prev) => {
           const idx = prev.findIndex(
-            (c) => c.challengeId === selectedChallenge.id
+            (c) => c.challengeId === selectedChallenge.id,
           );
           if (idx === -1) {
             return [
@@ -271,8 +271,8 @@ export default function ChallengeGrid({
 
         toast.success(
           `Generated successfully! Score: ${data.submission.score.toFixed(
-            2
-          )} (${data.attemptsRemaining} attempts remaining)`
+            2,
+          )} (${data.attemptsRemaining} attempts remaining)`,
         );
       } else {
         toast.error(data.error || "Failed to generate image");
@@ -301,14 +301,14 @@ export default function ChallengeGrid({
           setHasVoted(true);
           setSkipped(false);
           setVotesCount(
-            typeof data.votes === "number" ? data.votes : votesCount ?? 0
+            typeof data.votes === "number" ? data.votes : (votesCount ?? 0),
           );
           toast.success("Thanks for voting — you may continue.");
         } else {
           // toggled off (shouldn't normally happen as initial state) — require upvote
           setHasVoted(false);
           setVotesCount(
-            typeof data.votes === "number" ? data.votes : votesCount ?? 0
+            typeof data.votes === "number" ? data.votes : (votesCount ?? 0),
           );
           toast.error("You must upvote the image to continue");
         }
@@ -377,7 +377,7 @@ export default function ChallengeGrid({
                 </h3>
                 {(() => {
                   const count = submissionCounts.find(
-                    (c) => c.challengeId === challenge.id
+                    (c) => c.challengeId === challenge.id,
                   );
                   const used = count?.attemptsUsed || 0;
                   const remaining = count?.attemptsRemaining || 6;
@@ -407,7 +407,7 @@ export default function ChallengeGrid({
           // Prevent closing the dialog if there's a generated image that hasn't been voted on or skipped
           if (!open && needsVote) {
             toast.error(
-              "Please vote on or skip your generated image before closing"
+              "Please vote on or skip your generated image before closing",
             );
             return;
           }

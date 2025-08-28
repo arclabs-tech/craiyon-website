@@ -21,9 +21,7 @@ export const stylePresets = [
   "craft-clay",
 ] as const;
 
-export const imageModels = [
-  "black-forest-labs/flux-schnell",
-] as const;
+export const imageModels = ["black-forest-labs/flux-schnell"] as const;
 
 const imageOpts = {
   model: z.enum(imageModels),

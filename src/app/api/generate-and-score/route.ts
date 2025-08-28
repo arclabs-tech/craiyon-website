@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     if (!Number.isFinite(challengeId) || !userPrompt || !userPrompt.trim()) {
       return NextResponse.json(
         { error: "Challenge ID (number) and non-empty prompt are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (!challenge || !challenge.prompt || !challenge.image_url) {
       return NextResponse.json(
         { error: "Challenge not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     if (attemptsRemaining <= 0) {
       return NextResponse.json(
         { error: "You have used all 6 attempts for this challenge" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -64,14 +64,14 @@ export async function POST(request: NextRequest) {
     if (!generatedImageUrl) {
       return NextResponse.json(
         { error: "Failed to generate image" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     // Calculate score using image embeddings only (cosine similarity)
     const imageScore = await compareImages(
       challenge.image_url,
-      generatedImageUrl
+      generatedImageUrl,
     );
     console.log(`🎯 Image-only scoring: image=${imageScore}`);
 
@@ -89,8 +89,8 @@ export async function POST(request: NextRequest) {
     const currentBest = Number(previousBest?.max_score) || 0;
     console.log(
       `📈 Previous best for challenge ${challengeId}: ${currentBest.toFixed(
-        2
-      )}, New score: ${finalScore.toFixed(2)}`
+        2,
+      )}, New score: ${finalScore.toFixed(2)}`,
     );
 
     // Save submission to database
@@ -143,16 +143,16 @@ export async function POST(request: NextRequest) {
 
       console.log(
         `🏆 New personal best! Improved by ${scoreImprovement.toFixed(
-          2
-        )} (${currentBest.toFixed(2)} → ${finalScore.toFixed(2)})`
+          2,
+        )} (${currentBest.toFixed(2)} → ${finalScore.toFixed(2)})`,
       );
     } else {
       console.log(
         `📊 Score ${finalScore.toFixed(
-          2
+          2,
         )} not better than personal best ${currentBest.toFixed(
-          2
-        )} for this challenge`
+          2,
+        )} for this challenge`,
       );
     }
 
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
     console.error("Generate and score error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

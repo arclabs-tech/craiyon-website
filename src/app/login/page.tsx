@@ -1,17 +1,23 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { toast } from "sonner";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -20,10 +26,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
       });
@@ -31,14 +37,14 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success('Login successful!');
-        router.push('/');
+        toast.success("Login successful!");
+        router.push("/");
         router.refresh();
       } else {
-        toast.error(data.error || 'Login failed');
+        toast.error(data.error || "Login failed");
       }
     } catch (error) {
-      toast.error('An error occurred during login');
+      toast.error("An error occurred during login");
     } finally {
       setLoading(false);
     }
@@ -46,10 +52,18 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700">
-      <Image src="/login-illustration.png" alt="Login Illustration" width={400} height={200} className="mb-6" />
+      <Image
+        src="/login-illustration.png"
+        alt="Login Illustration"
+        width={400}
+        height={200}
+        className="mb-6"
+      />
       <Card className="w-full max-w-md bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-slate-200 dark:border-slate-700 shadow-xl">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Login
+          </CardTitle>
           <CardDescription className="text-center text-slate-600 dark:text-slate-400" />
         </CardHeader>
         <CardContent>
@@ -75,17 +89,35 @@ export default function LoginPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
           {/* Credential hints removed intentionally */}
         </CardContent>
       </Card>
       <div className="flex flex-row items-center justify-center gap-8 mt-8">
-        <Image src="/logo_light.png" alt="Arclabs Logo" width={128} height={64} className="h-16 w-auto drop-shadow" />
-        <Image src="/aiml-logo.svg" alt="AIML Logo" width={128} height={64} className="h-16 w-auto drop-shadow" />
-        <Image src="/aura-logo.svg" alt="Aura Logo" width={128} height={64} className="h-16 w-auto drop-shadow" />
+        <Image
+          src="/logo_light.png"
+          alt="Arclabs Logo"
+          width={128}
+          height={64}
+          className="h-16 w-auto drop-shadow"
+        />
+        <Image
+          src="/aiml-logo.svg"
+          alt="AIML Logo"
+          width={128}
+          height={64}
+          className="h-16 w-auto drop-shadow"
+        />
+        <Image
+          src="/aura-logo.svg"
+          alt="Aura Logo"
+          width={128}
+          height={64}
+          className="h-16 w-auto drop-shadow"
+        />
       </div>
     </div>
   );
-} 
+}
